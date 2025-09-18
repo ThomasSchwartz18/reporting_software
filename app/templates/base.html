@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Reporting Software{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css" integrity="sha512-8vq9myS90LpPpd73d8BQrWA5RHFX5qUU8vb0JhBKsN0fqUx7dI0dWnjRHyVFZaI7oL/6nV74TWgP5QWsv2qQ1g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 420px;
+      }
+      .messages {
+        margin-bottom: 1rem;
+      }
+      .message {
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+      }
+      .message.success {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .message.error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .message.info {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      a {
+        color: #2563eb;
+      }
+      h1 {
+        margin-top: 0;
+      }
+      button {
+        cursor: pointer;
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+      }
+      form label {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="messages">
+            {% for category, message in messages %}
+              <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
