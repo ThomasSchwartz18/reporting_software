@@ -8,10 +8,13 @@ Capture floor data (starting with AOI) and auto-generate weekly summaries.
    bash scripts/bootstrap.sh
 4) Run API:
    bash scripts/run.sh
-5) Open http://127.0.0.1:8000/docs
-6) Seed basics (lines, operations, a few defect codes):
+5) (Optional) Launch the Flask UI for dashboards and manual data entry:
+   bash scripts/run_flask.sh
+   Open http://127.0.0.1:5000 to view the dashboard.
+6) Open http://127.0.0.1:8000/docs
+7) Seed basics (lines, operations, a few defect codes):
    python scripts/seed_minimum.py
-7) Generate a sample weekly report (HTML & PDF if WeasyPrint available):
+8) Generate a sample weekly report (HTML & PDF if WeasyPrint available):
    python reports/weekly.py
 
 ## Swap DBs later

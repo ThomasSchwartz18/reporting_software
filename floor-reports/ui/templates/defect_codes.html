@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Defect Codes · AOI Reporting{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3">Defect Dictionary</h1>
+      <p class="text-muted mb-0">Reference information for AOI defect codes.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('new_aoi_report') }}">Log AOI Report</a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Code</th>
+              <th scope="col">Name</th>
+              <th scope="col">Default Operation</th>
+              <th scope="col">Component Class</th>
+              <th scope="col">Category</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if defect_codes %}
+              {% for code in defect_codes %}
+                <tr>
+                  <th scope="row">{{ code.code }}</th>
+                  <td>{{ code.name }}</td>
+                  <td>{{ code.default_operation }}</td>
+                  <td>{{ code.component_class or "–" }}</td>
+                  <td>{{ code.category or "–" }}</td>
+                  <td class="small">{{ code.description or "" }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">No defect codes have been configured.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

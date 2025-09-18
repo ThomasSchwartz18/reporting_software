@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Report Submitted · AOI Reporting{% endblock %}
+
+{% block content %}
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <h1 class="h3">AOI Report Submitted</h1>
+      <p class="text-muted mb-0">The inspection has been recorded successfully.</p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+      <a class="btn btn-primary" href="{{ url_for('new_aoi_report') }}">Log Another Report</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') }}">Return to Dashboard</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <strong>Summary</strong>
+        </div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-5">Report ID</dt>
+            <dd class="col-sm-7">{{ report.id }}</dd>
+
+            <dt class="col-sm-5">Job</dt>
+            <dd class="col-sm-7">{{ report.job.job_number }}</dd>
+
+            <dt class="col-sm-5">Assembly</dt>
+            <dd class="col-sm-7">{{ report.job.assembly.number }}</dd>
+
+            <dt class="col-sm-5">Revision</dt>
+            <dd class="col-sm-7">{{ report.job.revision.rev_code if report.job.revision else '–' }}</dd>
+
+            <dt class="col-sm-5">Operation</dt>
+            <dd class="col-sm-7">{{ report.operation.name if report.operation else '–' }}</dd>
+
+            <dt class="col-sm-5">Line</dt>
+            <dd class="col-sm-7">{{ report.line.name if report.line else '–' }}</dd>
+
+            <dt class="col-sm-5">Operator</dt>
+            <dd class="col-sm-7">{{ report.operator.badge if report.operator else '–' }}</dd>
+
+            <dt class="col-sm-5">Boards Inspected</dt>
+            <dd class="col-sm-7">{{ report.boards_inspected }}</dd>
+
+            <dt class="col-sm-5">Boards NG</dt>
+            <dd class="col-sm-7">{{ report.boards_ng }}</dd>
+
+            <dt class="col-sm-5">Notes</dt>
+            <dd class="col-sm-7">{{ report.notes or '–' }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <strong>Defects</strong>
+        </div>
+        <div class="card-body">
+          {% if defects %}
+            <ul class="list-group list-group-flush">
+              {% for defect in defects %}
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <strong>{{ defect.defect.code }}</strong>
+                      <span class="text-muted">{{ defect.defect.name }}</span>
+                    </div>
+                    <span class="badge text-bg-secondary">{{ defect.count }}</span>
+                  </div>
+                  {% if defect.defect.description %}
+                    <p class="small mb-0 mt-2 text-muted">{{ defect.defect.description }}</p>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">No defects were recorded for this inspection.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
