@@ -3,7 +3,7 @@ Capture floor data (starting with AOI) and auto-generate weekly summaries.
 
 ## Quick Start
 1) Python 3.11+, Docker Desktop (optional), Git
-2) Create .env: copy .env.example -> .env and pick DATABASE_URL
+2) Create .env: copy .env.example -> .env and pick DATABASE_URL (default SQLite is `sqlite:///./app.db`)
 3) Install deps & initialize DB:
    bash scripts/bootstrap.sh
 4) Run API:
