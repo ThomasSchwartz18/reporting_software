@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.mypy_cache/
+
+# Alembic
+migrations/versions/__pycache__/
+
+# Local data
+*.db
+reports/out/
