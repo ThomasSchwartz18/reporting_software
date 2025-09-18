@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Reporting Software{% endblock %}
+
+{% block content %}
+  <h1>Reporting Software Login</h1>
+  <form method="post">
+    <label for="username">Username</label>
+    <input id="username" name="username" type="text" placeholder="Enter username" required>
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" placeholder="Enter password" required>
+
+    <button type="submit">Log In</button>
+  </form>
+{% endblock %}
