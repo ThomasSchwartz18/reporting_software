@@ -1,6 +1,6 @@
 from __future__ import annotations
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from . import models as m
 from . import schemas as s
 
@@ -76,8 +76,19 @@ def create_aoi_report(db: Session, payload: s.AOIReportCreate) -> m.AOIReport:
 
 # Simple queries
 
+def list_operations(db: Session):
+    stmt = select(m.Operation).order_by(m.Operation.name)
+    return db.execute(stmt).scalars().all()
+
+
+def list_lines(db: Session):
+    stmt = select(m.Line).order_by(m.Line.name)
+    return db.execute(stmt).scalars().all()
+
+
 def list_defect_codes(db: Session):
-    return db.execute(select(m.DefectCode)).scalars().all()
+    stmt = select(m.DefectCode).order_by(m.DefectCode.code)
+    return db.execute(stmt).scalars().all()
 
 def kpi_summary(db: Session) -> dict:
     # naive impl for MVP
@@ -87,3 +98,29 @@ def kpi_summary(db: Session) -> dict:
     total_ng = sum(x.boards_ng for x in boards)
     site_ppm = (total_ng / total_boards * 1_000_000) if total_boards else 0.0
     return {"total_jobs": total_jobs, "total_boards": total_boards, "total_ng": total_ng, "site_ppm": site_ppm}
+
+
+def get_aoi_report_details(db: Session, report_id: str):
+    stmt = (
+        select(m.AOIReport)
+        .where(m.AOIReport.id == report_id)
+        .options(
+            joinedload(m.AOIReport.job).joinedload(m.Job.assembly),
+            joinedload(m.AOIReport.job).joinedload(m.Job.revision),
+            joinedload(m.AOIReport.operation),
+            joinedload(m.AOIReport.line),
+            joinedload(m.AOIReport.operator),
+        )
+    )
+    report = db.execute(stmt).scalar_one_or_none()
+    if not report:
+        return None
+
+    defects_stmt = (
+        select(m.AOIDefect)
+        .where(m.AOIDefect.aoi_report_id == report.id)
+        .options(joinedload(m.AOIDefect.defect))
+        .order_by(m.AOIDefect.id)
+    )
+    defects = db.execute(defects_stmt).scalars().all()
+    return {"report": report, "defects": defects}
