@@ -8,6 +8,7 @@ from flask import Flask
 from .config import Config
 from .extensions import db
 from .models import ensure_default_user, ensure_user_role_column
+from .aoi import aoi_bp, ensure_problem_codes
 from .routes.auth import auth_bp
 
 
@@ -43,6 +44,7 @@ def register_extensions(app: Flask) -> None:
 def register_blueprints(app: Flask) -> None:
     """Register Flask blueprints."""
     app.register_blueprint(auth_bp)
+    app.register_blueprint(aoi_bp, url_prefix="/aoi")
 
 
 def initialize_database(app: Flask) -> None:
@@ -52,3 +54,4 @@ def initialize_database(app: Flask) -> None:
         db.create_all()
         ensure_user_role_column()
         ensure_default_user()
+        ensure_problem_codes()
