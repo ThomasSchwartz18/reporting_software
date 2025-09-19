@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - Reporting Software{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--fluid{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  .inspection-sheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .sheet-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 76, 92, 0.15);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sheet-card h2 {
+    margin: 0;
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .info-card {
+    grid-column: span 1;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0.75rem 1rem;
+    align-items: center;
+  }
+
+  .info-grid label {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .info-grid input[type="text"],
+  .info-grid input[type="date"],
+  .info-grid input[type="number"] {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--panel-border);
+    background: #f7f8fa;
+    font-size: 0.9rem;
+  }
+
+  .info-grid input[readonly] {
+    background: #e8eef2;
+    color: var(--text-secondary);
+  }
+
+  .info-grid input:focus {
+    outline: 2px solid rgba(15, 76, 92, 0.25);
+    background: #ffffff;
+  }
+
+  .signature-field {
+    border: 1px solid var(--panel-border);
+    height: 56px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #ffffff,
+      #ffffff 6px,
+      rgba(15, 76, 92, 0.05) 6px,
+      rgba(15, 76, 92, 0.05) 7px
+    );
+    position: relative;
+  }
+
+  .signature-caption {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.35rem;
+    display: block;
+    text-align: right;
+  }
+
+  .quantities-card {
+    align-self: flex-start;
+  }
+
+  .field-stack {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .field-stack label {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field-stack input {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--panel-border);
+    background: #f7f8fa;
+    font-size: 0.95rem;
+  }
+
+  .field-stack input:focus {
+    outline: 2px solid rgba(15, 76, 92, 0.25);
+    background: #ffffff;
+  }
+
+  .defect-card,
+  .rejection-card {
+    grid-column: span 2;
+  }
+
+  .defect-card table,
+  .rejection-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .defect-card th,
+  .defect-card td,
+  .rejection-card th,
+  .rejection-card td {
+    border: 1px solid rgba(15, 76, 92, 0.15);
+    padding: 0.6rem 0.75rem;
+  }
+
+  .defect-card th,
+  .rejection-card th {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    background: rgba(15, 76, 92, 0.07);
+    color: var(--text-secondary);
+    text-align: left;
+  }
+
+  .defect-card input[type="text"],
+  .rejection-card input[type="text"],
+  .rejection-card textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .defect-card input[type="text"]:focus,
+  .rejection-card input[type="text"]:focus,
+  .rejection-card textarea:focus {
+    outline: 2px solid rgba(15, 76, 92, 0.25);
+    background: #ffffff;
+  }
+
+  .rejection-card textarea {
+    min-height: 60px;
+  }
+
+  .notes-area {
+    margin-top: 1rem;
+  }
+
+  .notes-area label {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .notes-area textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid var(--panel-border);
+    background: #f7f8fa;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.95rem;
+    resize: vertical;
+  }
+
+  .notes-area textarea:focus {
+    outline: 2px solid rgba(15, 76, 92, 0.25);
+    background: #ffffff;
+  }
+
+  @media (max-width: 1024px) {
+    .defect-card,
+    .rejection-card {
+      grid-column: span 1;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .info-grid label {
+      margin-bottom: 0.15rem;
+    }
+  }
+{% endblock %}
+
+{% block content %}
+  <div class="toolbar">
+    <span>Data Inspection</span>
+    <a href="{{ url_for('auth.dashboard') }}">Back to selection</a>
+  </div>
+  <h1>{{ page_title }}</h1>
+
+  <div class="inspection-sheet">
+    <section class="sheet-card info-card">
+      <h2>Job Information</h2>
+      <div class="info-grid">
+        <label for="report-type">Type</label>
+        <input
+          id="report-type"
+          name="report_type"
+          type="text"
+          value="{{ report_type }}"
+          readonly
+        />
+
+        <label for="report-date">Date</label>
+        <input
+          id="report-date"
+          name="report_date"
+          type="date"
+          value="{{ report_date.isoformat() }}"
+        />
+
+        <label for="customer">Customer</label>
+        <input id="customer" name="customer" type="text" placeholder="Enter customer" />
+
+        <label for="assembly-number">Assembly Number</label>
+        <input
+          id="assembly-number"
+          name="assembly_number"
+          type="text"
+          placeholder="Enter assembly number"
+        />
+
+        <label for="job-number">Job Number</label>
+        <input
+          id="job-number"
+          name="job_number"
+          type="text"
+          placeholder="Enter job number"
+        />
+
+        <label for="revision">Rev</label>
+        <input id="revision" name="revision" type="text" placeholder="Enter revision" />
+
+        <label for="total-boards">Total Boards in Job</label>
+        <input
+          id="total-boards"
+          name="total_boards"
+          type="number"
+          min="0"
+          placeholder="Enter total quantity"
+        />
+
+        <label for="operator-signature">Operator</label>
+        <div>
+          <div class="signature-field" id="operator-signature" aria-label="Operator signature"></div>
+          <span class="signature-caption">Signature</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet-card quantities-card">
+      <h2>Inspection Summary</h2>
+      <div class="field-stack">
+        <div>
+          <label for="inspected-qty">Boards Inspected</label>
+          <input
+            id="inspected-qty"
+            name="inspected_qty"
+            type="number"
+            min="0"
+            placeholder="Enter inspected quantity"
+          />
+        </div>
+        <div>
+          <label for="rejected-qty">Boards Rejected</label>
+          <input
+            id="rejected-qty"
+            name="rejected_qty"
+            type="number"
+            min="0"
+            placeholder="Enter rejected quantity"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet-card defect-card">
+      <h2>Defect Code Reference</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Code</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in defect_rows %}
+            <tr>
+              <td>
+                <input
+                  type="text"
+                  name="defect_code_{{ row }}"
+                  aria-label="Defect code {{ row }}"
+                  placeholder="Enter code"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  name="defect_description_{{ row }}"
+                  aria-label="Defect description {{ row }}"
+                  placeholder="Enter description"
+                />
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="sheet-card rejection-card">
+      <h2>Reason for Rejection Log</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Board / Panel ID</th>
+            <th scope="col">Defect Code</th>
+            <th scope="col">Notes / Action Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rejection_rows %}
+            <tr>
+              <td>{{ row }}</td>
+              <td>
+                <input
+                  type="text"
+                  name="rejection_board_{{ row }}"
+                  aria-label="Board or panel identifier for row {{ row }}"
+                  placeholder="Enter identifier"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  name="rejection_defect_code_{{ row }}"
+                  aria-label="Defect code for row {{ row }}"
+                  placeholder="Reference code"
+                />
+              </td>
+              <td>
+                <textarea
+                  name="rejection_notes_{{ row }}"
+                  aria-label="Notes for row {{ row }}"
+                  placeholder="Document findings, disposition, or follow-up actions"
+                ></textarea>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="notes-area">
+        <label for="general-notes">Additional Notes</label>
+        <textarea
+          id="general-notes"
+          name="general_notes"
+          placeholder="Capture any process notes, shift hand-offs, or follow-up requirements"
+        ></textarea>
+      </div>
+    </section>
+  </div>
+{% endblock %}
