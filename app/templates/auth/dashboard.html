@@ -98,45 +98,80 @@
       text-transform: uppercase;
       color: var(--muted);
     }
+
+    {% if is_staff %}
+    body.layout-flow {
+      align-items: center;
+    }
+
+    .container {
+      width: min(520px, 100%);
+    }
+
+    .card.card--highlight {
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    .questionnaire {
+      gap: 0;
+    }
+
+    .question-card {
+      padding: 0;
+    }
+
+    .option-grid button {
+      border-width: 1px;
+    }
+    {% endif %}
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="utility-bar">
-    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
-    <a href="{{ url_for('auth.logout') }}">Log out</a>
-  </div>
+  {% if not is_staff %}
+    <div class="utility-bar">
+      <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
+      <a href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
 
-  <div class="page-header">
-    <div>
-      <div class="page-header__eyebrow">Operations Control Center</div>
-      <h1 class="page-header__title">Welcome back, {{ user.username }}</h1>
-      <p class="page-header__subtitle">
-        Select an operational area to access curated production reports, or switch into analysis
-        mode for executive-level insights.
-      </p>
+    <div class="page-header">
+      <div>
+        <div class="page-header__eyebrow">Operations Control Center</div>
+        <h1 class="page-header__title">Welcome back, {{ user.username }}</h1>
+        <p class="page-header__subtitle">
+          Select an operational area to access curated production reports, or switch into analysis
+          mode for executive-level insights.
+        </p>
+      </div>
+      <div class="page-header__actions">
+        {% if analysis_access %}
+          <a class="button button--outline" href="{{ url_for('auth.analysis') }}">Enter Analysis Mode</a>
+        {% endif %}
+        {% if is_admin %}
+          <a class="button" href="{{ url_for('auth.settings') }}">Configure Application</a>
+        {% endif %}
+      </div>
     </div>
-    <div class="page-header__actions">
-      {% if analysis_access %}
-        <a class="button button--outline" href="{{ url_for('auth.analysis') }}">Enter Analysis Mode</a>
-      {% endif %}
-      {% if is_admin %}
-        <a class="button" href="{{ url_for('auth.settings') }}">Configure Application</a>
-      {% endif %}
-    </div>
-  </div>
+  {% endif %}
 
   <div class="card card--highlight">
-    <div class="card__section-title">Guided Reports</div>
-    <p class="dashboard-description">
-      Choose the production area you would like to review. We will present the most relevant report
-      set for your selection, ensuring teams and leadership stay aligned on critical metrics.
-    </p>
+    {% if not is_staff %}
+      <div class="card__section-title">Guided Reports</div>
+      <p class="dashboard-description">
+        Choose the production area you would like to review. We will present the most relevant
+        report set for your selection, ensuring teams and leadership stay aligned on critical
+        metrics.
+      </p>
+    {% endif %}
 
     <div class="questionnaire">
       <div id="area-question" class="question-card active">
-        <div class="questionnaire-meta">Step 1</div>
-        <h2 class="question-title">Select your area</h2>
+        {% if not is_staff %}
+          <div class="questionnaire-meta">Step 1</div>
+          <h2 class="question-title">Select your area</h2>
+        {% endif %}
         <div class="option-grid two-column">
           <button type="button" data-area="AOI">AOI</button>
           <button type="button" data-area="Rework">Rework</button>
@@ -148,23 +183,31 @@
       </div>
 
       <div id="report-question" class="question-card" aria-live="polite">
-        <div class="questionnaire-meta">Step 2</div>
-        <div class="toolbar">
-          <span>Selected Area</span>
-          <span id="selected-area-label">&mdash;</span>
-        </div>
-        <h2 class="question-title">Select report</h2>
+        {% if not is_staff %}
+          <div class="questionnaire-meta">Step 2</div>
+          <div class="toolbar">
+            <span>Selected Area</span>
+            <span id="selected-area-label">&mdash;</span>
+          </div>
+          <h2 class="question-title">Select report</h2>
+        {% else %}
+          <div class="toolbar" hidden>
+            <span>Selected Area</span>
+            <span id="selected-area-label">&mdash;</span>
+          </div>
+        {% endif %}
         <div class="option-grid two-column" id="report-options"></div>
         <div class="prototype-message" id="prototype-message" hidden>
           This application is currently a prototype. Reporting is only available for the AOI branch.
           Please return to the previous step to choose AOI for report access.
         </div>
-        <button type="button" class="back-link" id="back-button">Go back</button>
+        <button type="button" class="back-link" id="back-button" {% if is_staff %}hidden{% endif %}>Go back</button>
       </div>
     </div>
   </div>
 
   <script>
+    const isStaff = {{ 'true' if is_staff else 'false' }};
     const areaQuestion = document.getElementById('area-question');
     const reportQuestion = document.getElementById('report-question');
     const reportOptions = document.getElementById('report-options');
@@ -178,7 +221,9 @@
     };
 
     function showReportQuestion(area) {
-      selectedAreaLabel.textContent = area;
+      if (selectedAreaLabel) {
+        selectedAreaLabel.textContent = area;
+      }
       reportOptions.innerHTML = '';
 
       if (area === 'AOI') {
@@ -198,7 +243,12 @@
 
       areaQuestion.classList.remove('active');
       reportQuestion.classList.add('active');
-      backButton.focus();
+      if (isStaff && backButton) {
+        backButton.hidden = false;
+      }
+      if (backButton) {
+        backButton.focus();
+      }
     }
 
     function showAreaQuestion() {
@@ -210,6 +260,9 @@
       if (firstAreaButton) {
         firstAreaButton.focus();
       }
+      if (isStaff && backButton) {
+        backButton.hidden = true;
+      }
     }
 
     areaQuestion.querySelectorAll('button[data-area]').forEach((button) => {
@@ -218,6 +271,8 @@
       });
     });
 
-    backButton.addEventListener('click', showAreaQuestion);
+    if (backButton) {
+      backButton.addEventListener('click', showAreaQuestion);
+    }
   </script>
 {% endblock %}

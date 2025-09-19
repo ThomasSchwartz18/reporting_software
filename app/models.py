@@ -25,7 +25,7 @@ class Role(str, Enum):
         return {
             Role.ADMIN: "Administrator",
             Role.MANAGER: "Manager",
-            Role.STAFF: "Team Member",
+            Role.STAFF: "User",
         }[self]
 
 
