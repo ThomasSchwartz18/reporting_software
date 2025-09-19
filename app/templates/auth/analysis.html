@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Mode - Reporting Software{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--wide{% endblock %}
+
+{% block styles %}
+  <style>
+    .analysis-overview {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .insight-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.92rem;
+    }
+
+    .insight-table thead {
+      background: rgba(15, 76, 92, 0.08);
+    }
+
+    .insight-table th,
+    .insight-table td {
+      padding: 0.85rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(15, 76, 92, 0.12);
+    }
+
+    .insight-table th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .insight-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .insight-note {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 76, 92, 0.2);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .empty-state {
+      padding: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="utility-bar">
+    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
+    <a href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="page-header__eyebrow">Analysis Workspace</div>
+      <h1 class="page-header__title">Operational Intelligence</h1>
+      <p class="page-header__subtitle">
+        Review performance signals across teams and surface trends that inform executive decision
+        making. Focus areas: {{ settings_snapshot.analysis_focus }}.
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <a class="button button--ghost" href="{{ url_for('auth.dashboard') }}">Back to Dashboard</a>
+      {% if user.role_enum is Role.ADMIN %}
+        <a class="button" href="{{ url_for('auth.settings') }}">Adjust Settings</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="analysis-overview">
+    <section class="card card--highlight">
+      <h2>Executive Summary</h2>
+      <div class="stat-grid">
+        <div class="stat">
+          <span class="stat__label">Total submissions</span>
+          <span class="stat__value">{{ total_entries }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Average score</span>
+          <span class="stat__value">{{ '%.1f' | format(average_score) }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Last submission</span>
+          <span class="stat__value">
+            {% if latest_submission %}
+              {{ latest_submission.strftime('%b %d, %Y %H:%M') }}
+            {% else %}
+              No entries
+            {% endif %}
+          </span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Refresh cadence</span>
+          <span class="stat__value">{{ settings_snapshot.refresh_interval }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Data source</span>
+          <span class="stat__value" style="font-size: 0.9rem; line-height: 1.4;">{{ settings_snapshot.data_source }}</span>
+        </div>
+      </div>
+      <p class="insight-note">
+        These indicators draw from the configured data source. Adjust connections or focus areas in
+        the administration settings to influence analysis outputs.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Performance Leaders</h2>
+      {% if top_performers %}
+        <table class="insight-table">
+          <thead>
+            <tr>
+              <th scope="col">Contributor</th>
+              <th scope="col">Avg. Score</th>
+              <th scope="col">Submissions</th>
+              <th scope="col">Total Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for performer in top_performers %}
+              <tr>
+                <td>{{ performer.employee_name }}</td>
+                <td>{{ '%.1f' | format(performer.avg_score or 0) }}</td>
+                <td>{{ performer.entries }}</td>
+                <td>{{ '%.0f' | format(performer.total_value or 0) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No submissions are available yet to surface top performers.</p>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Department Pulse</h2>
+      {% if department_breakdown %}
+        <table class="insight-table">
+          <thead>
+            <tr>
+              <th scope="col">Department</th>
+              <th scope="col">Entries</th>
+              <th scope="col">Avg. Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in department_breakdown %}
+              <tr>
+                <td>{{ row.department }}</td>
+                <td>{{ row.total }}</td>
+                <td>{{ '%.1f' | format(row.avg_score or 0) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">Department-level metrics will appear once employee data is captured.</p>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Recent Activity</h2>
+      {% if recent_entries %}
+        <table class="insight-table">
+          <thead>
+            <tr>
+              <th scope="col">Timestamp</th>
+              <th scope="col">Contributor</th>
+              <th scope="col">Department</th>
+              <th scope="col">Metric</th>
+              <th scope="col">Value</th>
+              <th scope="col">Score</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in recent_entries %}
+              <tr>
+                <td>{{ entry.submitted_at.strftime('%b %d, %Y %H:%M') }}</td>
+                <td>{{ entry.employee_name }}</td>
+                <td>{{ entry.department }}</td>
+                <td>{{ entry.metric_name }}</td>
+                <td>{{ '%.1f' | format(entry.value or 0) }}</td>
+                <td>{{ '%.1f' | format(entry.performance_score or 0) }}</td>
+                <td><span class="status-pill">{{ entry.status }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No recent submissions. Encourage teams to upload their operational checkpoints.</p>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

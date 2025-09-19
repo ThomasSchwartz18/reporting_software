@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Administration Settings - Reporting Software{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--wide{% endblock %}
+
+{% block styles %}
+  <style>
+    .settings-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .settings-grid .card {
+      position: relative;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-grid.two-column {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .form-grid .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--panel-border);
+      background: #f7f8fa;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    select:focus {
+      outline: 2px solid rgba(15, 76, 92, 0.25);
+      background: #ffffff;
+    }
+
+    .settings-card__meta {
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .settings-card__actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .user-directory {
+      border-top: 1px solid rgba(15, 76, 92, 0.12);
+      margin-top: 1.5rem;
+    }
+
+    .user-entry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(15, 76, 92, 0.08);
+    }
+
+    .user-entry:last-child {
+      border-bottom: none;
+    }
+
+    .user-entry__identity {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .user-entry__identity strong {
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .user-entry__role-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .leadership-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .pill {
+      background: rgba(15, 76, 92, 0.08);
+      border: 1px solid rgba(15, 76, 92, 0.16);
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+    }
+
+    .empty-state {
+      padding: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .card small {
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="utility-bar">
+    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
+    <a href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="page-header__eyebrow">Administrator Console</div>
+      <h1 class="page-header__title">System Configuration</h1>
+      <p class="page-header__subtitle">
+        Govern platform behaviour, manage user access, and keep leadership aligned with current
+        operational data sources.
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <a class="button button--ghost" href="{{ url_for('auth.dashboard') }}">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <div class="settings-grid">
+    <div class="card-grid two-column">
+      <section class="card card--highlight">
+        <h2>General Configuration</h2>
+        <p class="settings-card__meta">Branding &amp; presentation</p>
+        <form method="post" class="form-grid">
+          <input type="hidden" name="action" value="update_general">
+          <div class="field">
+            <label for="application_name">Application Name</label>
+            <input
+              id="application_name"
+              name="application_name"
+              type="text"
+              value="{{ settings_values.application_name }}"
+              placeholder="Executive Reporting Suite"
+            >
+          </div>
+          <div class="field">
+            <label for="tagline">Tagline</label>
+            <input
+              id="tagline"
+              name="tagline"
+              type="text"
+              value="{{ settings_values.tagline }}"
+              placeholder="High-trust insights for leadership"
+            >
+          </div>
+          <div class="settings-card__actions">
+            <button type="submit" class="button button--sm">Save General Settings</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Data Connections</h2>
+        <p class="settings-card__meta">Source of truth</p>
+        <form method="post" class="form-grid">
+          <input type="hidden" name="action" value="update_database">
+          <div class="field">
+            <label for="data_source">Primary Data Source</label>
+            <input
+              id="data_source"
+              name="data_source"
+              type="text"
+              value="{{ settings_values.data_source }}"
+              placeholder="Example: postgresql://user:password@host:5432/reporting"
+            >
+          </div>
+          <div class="field">
+            <label for="warehouse_connection">Data Warehouse Connection</label>
+            <input
+              id="warehouse_connection"
+              name="warehouse_connection"
+              type="text"
+              value="{{ settings_values.warehouse_connection }}"
+              placeholder="Describe integration or endpoint"
+            >
+          </div>
+          <div class="field">
+            <label for="refresh_interval">Refresh Interval</label>
+            <input
+              id="refresh_interval"
+              name="refresh_interval"
+              type="text"
+              value="{{ settings_values.refresh_interval }}"
+              placeholder="Hourly, Daily, Weekly"
+            >
+          </div>
+          <div class="settings-card__actions">
+            <button type="submit" class="button button--sm">Update Data Settings</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="card-grid two-column">
+      <section class="card">
+        <h2>Analysis Mode</h2>
+        <p class="settings-card__meta">Insight defaults</p>
+        <form method="post" class="form-grid">
+          <input type="hidden" name="action" value="update_analysis">
+          <div class="field">
+            <label for="analysis_focus">Primary Focus Areas</label>
+            <input
+              id="analysis_focus"
+              name="analysis_focus"
+              type="text"
+              value="{{ settings_values.analysis_focus }}"
+              placeholder="Quality & Throughput"
+            >
+          </div>
+          <div class="settings-card__actions">
+            <button type="submit" class="button button--sm">Save Analysis Preferences</button>
+          </div>
+        </form>
+        <small>Admins and managers share access to the analysis workspace.</small>
+      </section>
+
+      <section class="card">
+        <h2>Leadership Directory</h2>
+        <p class="settings-card__meta">Administrative coverage</p>
+        {% if admin_users %}
+          <p>The following leaders currently have system-wide administrative privileges:</p>
+          <div class="leadership-pills">
+            {% for admin in admin_users %}
+              <span class="pill">{{ admin.username }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-state">No administrators have been assigned yet.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>User Administration</h2>
+      <p class="settings-card__meta">Access provisioning</p>
+      <p>
+        Create new users for managers or team members and adjust access levels as responsibilities
+        evolve. Passwords can be rotated by recreating a user profile.
+      </p>
+
+      <form method="post" class="form-grid two-column" style="margin-top: 1.25rem;">
+        <input type="hidden" name="action" value="add_user">
+        <div class="field">
+          <label for="new_username">Username</label>
+          <input id="new_username" name="new_username" type="text" placeholder="e.g. a.johnson">
+        </div>
+        <div class="field">
+          <label for="new_password">Temporary Password</label>
+          <input id="new_password" name="new_password" type="text" placeholder="Generate secure password">
+        </div>
+        <div class="field">
+          <label for="new_role">Role</label>
+          <select id="new_role" name="new_role">
+            {% for role in roles %}
+              <option value="{{ role.value }}">{{ role.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="settings-card__actions" style="align-items: end;">
+          <button type="submit" class="button button--sm">Add User</button>
+        </div>
+      </form>
+
+      <div class="user-directory">
+        {% for directory_user in users %}
+          <form method="post" class="user-entry">
+            <input type="hidden" name="action" value="update_user_role">
+            <input type="hidden" name="user_id" value="{{ directory_user.id }}">
+            <div class="user-entry__identity">
+              <strong>{{ directory_user.username }}</strong>
+              <span class="user-entry__role-label">{{ role_labels[directory_user.role] }}</span>
+            </div>
+            <div>
+              <label for="role-{{ directory_user.id }}">Access Level</label>
+              <select id="role-{{ directory_user.id }}" name="role">
+                {% for role in roles %}
+                  <option value="{{ role.value }}" {% if directory_user.role == role.value %}selected{% endif %}>{{ role.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="settings-card__actions" style="align-items: center;">
+              <button type="submit" class="button button--sm">Apply</button>
+            </div>
+          </form>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+{% endblock %}
