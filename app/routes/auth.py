@@ -221,20 +221,53 @@ def settings() -> Any:
                 if target_id is None:
                     flash("Unable to identify the user to update.", "error")
                 else:
-                    target_user = db.session.get(User, int(target_id))
+                    try:
+                        target_pk = int(target_id)
+                    except (TypeError, ValueError):
+                        flash("Unable to identify the user to update.", "error")
+                    else:
+                        target_user = db.session.get(User, target_pk)
+                        if target_user is None:
+                            flash("The selected user could not be found.", "error")
+                        else:
+                            if (
+                                target_user.role == Role.ADMIN.value
+                                and role is not Role.ADMIN
+                                and User.query.filter_by(role=Role.ADMIN.value).count() <= 1
+                            ):
+                                flash(
+                                    "At least one administrator must remain in the system.",
+                                    "error",
+                                )
+                            else:
+                                target_user.role = role.value
+                                db.session.commit()
+                                flash("User access level updated.", "success")
+
+        elif action == "delete_user":
+            target_id = request.form.get("user_id")
+            if target_id is None:
+                flash("Unable to identify the user to remove.", "error")
+            else:
+                try:
+                    target_pk = int(target_id)
+                except (TypeError, ValueError):
+                    flash("Unable to identify the user to remove.", "error")
+                else:
+                    target_user = db.session.get(User, target_pk)
                     if target_user is None:
                         flash("The selected user could not be found.", "error")
+                    elif target_user.id == user.id:
+                        flash("You cannot remove your own account while signed in.", "error")
+                    elif (
+                        target_user.role == Role.ADMIN.value
+                        and User.query.filter_by(role=Role.ADMIN.value).count() <= 1
+                    ):
+                        flash("At least one administrator must remain in the system.", "error")
                     else:
-                        if (
-                            target_user.role == Role.ADMIN.value
-                            and role is not Role.ADMIN
-                            and User.query.filter_by(role=Role.ADMIN.value).count() <= 1
-                        ):
-                            flash("At least one administrator must remain in the system.", "error")
-                        else:
-                            target_user.role = role.value
-                            db.session.commit()
-                            flash("User access level updated.", "success")
+                        db.session.delete(target_user)
+                        db.session.commit()
+                        flash(f"User '{target_user.username}' removed.", "success")
 
         else:
             flash("The requested action is not recognised.", "error")
