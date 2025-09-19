@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
+from sqlalchemy import inspect, text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .extensions import db
@@ -94,6 +95,32 @@ DEFAULT_USERS: tuple[dict[str, str | Role], ...] = (
     {"username": "2276", "password": "2278!", "role": Role.MANAGER},
     {"username": "Schwartz", "password": "2276", "role": Role.ADMIN},
 )
+
+
+def ensure_user_role_column() -> None:
+    """Ensure the ``role`` column exists on the ``user`` table."""
+
+    inspector = inspect(db.engine)
+    if "user" not in inspector.get_table_names():
+        return
+
+    columns = {column_info["name"] for column_info in inspector.get_columns("user")}
+    if "role" in columns:
+        return
+
+    default_role = Role.STAFF.value
+    escaped_default_role = default_role.replace("'", "''")
+    with db.engine.begin() as connection:
+        connection.execute(
+            text(
+                "ALTER TABLE user ADD COLUMN role TEXT NOT NULL DEFAULT "
+                f"'{escaped_default_role}'"
+            )
+        )
+        connection.execute(
+            text("UPDATE user SET role = :default_role WHERE role IS NULL OR role = ''"),
+            {"default_role": default_role},
+        )
 
 
 def ensure_default_user() -> None:
