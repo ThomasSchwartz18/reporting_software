@@ -413,13 +413,12 @@
   </head>
   <body class="{% block body_class %}{% endblock %}">
     {% if session.get("user_id") %}
+      {% set banner_primary = session.get("progress_primary") or "Logged in successfully" %}
+      {% set default_details = "You are signed in as " ~ (session.get("username") or "user") ~ " (" ~ (session.get("role", "user")|title) ~ "). Double-check that you're working under the correct account before continuing." %}
+      {% set banner_details = session.get("progress_details") or default_details %}
       <div class="login-confirmation" role="status" aria-live="polite">
-        <span class="login-confirmation__primary">Logged in successfully</span>
-        <span class="login-confirmation__details">
-          You are signed in as <strong>{{ session.get("username") }}</strong>
-          ({{ session.get("role", "user")|title }}). Double-check that you're
-          working under the correct account before continuing.
-        </span>
+        <span class="login-confirmation__primary">{{ banner_primary }}</span>
+        <span class="login-confirmation__details">{{ banner_details }}</span>
       </div>
     {% endif %}
     <div class="container {% block container_class %}{% endblock %}">

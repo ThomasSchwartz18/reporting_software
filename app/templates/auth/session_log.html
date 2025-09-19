@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Session Log - Reporting Software{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--wide{% endblock %}
+
+{% block styles %}
+  <style>
+    .log-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .log-grid.two-column {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin-top: 0.75rem;
+    }
+
+    .log-table thead {
+      background: rgba(15, 76, 92, 0.08);
+    }
+
+    .log-table th,
+    .log-table td {
+      padding: 0.7rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(15, 76, 92, 0.12);
+    }
+
+    .log-table th {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .log-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .metric-highlight {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0.5rem 0 0;
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .stat-card p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .event-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .event-details span {
+      background: rgba(15, 76, 92, 0.08);
+      padding: 0.25rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .empty-state {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="utility-bar">
+    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
+    <a href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="page-header__eyebrow">Administrative Insight</div>
+      <h1 class="page-header__title">Session Interaction Log</h1>
+      <p class="page-header__subtitle">
+        Review the journey users take through the reporting portal. Use the interaction counts to
+        understand popular areas, identify friction, and spot opportunities for UI refinement.
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <a class="button button--ghost" href="{{ url_for('auth.dashboard') }}">Back to Dashboard</a>
+      <a class="button" href="{{ url_for('auth.settings') }}">Configuration</a>
+    </div>
+  </div>
+
+  <div class="card-grid two-column">
+    <section class="card stat-card">
+      <div>
+        <div class="metric-label">Distinct sessions captured</div>
+        <div class="metric-highlight">{{ distinct_sessions }}</div>
+      </div>
+      <div>
+        <div class="metric-label">Tracked interactions</div>
+        <div class="metric-highlight">{{ total_events }}</div>
+      </div>
+      <p>
+        Each interaction is tied to an anonymised session identifier so you can follow patterns
+        without exposing personal data. Drill into the tables to learn how visitors navigate the
+        reporting flow.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Report selections by area</h2>
+      {% if report_by_area %}
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Report selections</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for area, total in report_by_area|dictsort(by='value', reverse=true) %}
+              <tr>
+                <td>{{ area }}</td>
+                <td>{{ total }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No report selections have been recorded yet.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="log-grid two-column" style="margin-top: 1.5rem;">
+    <section class="card">
+      <h2>Area engagement</h2>
+      {% if area_usage %}
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Selections</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in area_usage %}
+              <tr>
+                <td>{{ row.context_value }}</td>
+                <td>{{ row.total }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No area selections have been captured during this period.</p>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Backtracking signals</h2>
+      {% if backtrack_usage %}
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col">Previous area</th>
+              <th scope="col">Returns</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in backtrack_usage %}
+              <tr>
+                <td>{{ row.context_value or 'Unspecified' }}</td>
+                <td>{{ row.total }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No users have returned to the area selection step yet.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="card" style="margin-top: 1.5rem;">
+    <h2>Report preferences</h2>
+    {% if report_preferences %}
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th scope="col">Report</th>
+            <th scope="col">Selections</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in report_preferences %}
+            <tr>
+              <td>{{ row.context_value }}</td>
+              <td>{{ row.total }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">Report selections will appear once visitors choose a report.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" style="margin-top: 1.5rem;">
+    <h2>Recent interactions</h2>
+    {% if recent_events %}
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Session</th>
+            <th scope="col">User</th>
+            <th scope="col">Event</th>
+            <th scope="col">Context</th>
+            <th scope="col">Details</th>
+            <th scope="col">Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in recent_events %}
+            <tr>
+              <td>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>{{ event.session_id }}</td>
+              <td>{{ event.username }}</td>
+              <td>{{ event.event_type }}</td>
+              <td>{{ event.context or '—' }}</td>
+              <td>
+                {% if event.details %}
+                  <div class="event-details">
+                    {% for key, value in event.details.items() %}
+                      <span>{{ key }}: {{ value }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ event.path or '—' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">Interaction history will appear here as soon as users begin navigating the app.</p>
+    {% endif %}
+  </section>
+{% endblock %}

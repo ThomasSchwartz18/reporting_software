@@ -146,6 +146,9 @@
             <a class="button button--outline button--sm" href="{{ url_for('auth.analysis') }}">Analysis</a>
           {% endif %}
           {% if is_admin %}
+            <a class="button button--outline button--sm" href="{{ url_for('auth.session_log') }}">Session Log</a>
+          {% endif %}
+          {% if is_admin %}
             <a class="button button--sm" href="{{ url_for('auth.settings') }}">Configuration</a>
           {% endif %}
         </div>
@@ -205,19 +208,61 @@
 
   <script>
     const isStaff = {{ 'true' if is_staff else 'false' }};
+    const sessionEventUrl = '{{ url_for('auth.session_event') }}';
     const areaQuestion = document.getElementById('area-question');
     const reportQuestion = document.getElementById('report-question');
     const reportOptions = document.getElementById('report-options');
     const prototypeMessage = document.getElementById('prototype-message');
     const selectedAreaLabel = document.getElementById('selected-area-label');
     const backButton = document.getElementById('back-button');
+    const bannerPrimary = document.querySelector('.login-confirmation__primary');
+    const bannerDetails = document.querySelector('.login-confirmation__details');
+    let selectedArea = null;
 
     const reportRoutes = {
       'SMT Data Inspection Sheet': '{{ url_for('auth.report_aoi_smt') }}',
       'TH Data Inspection Sheet': '{{ url_for('auth.report_aoi_th') }}'
     };
 
+    function updateBanner(primary, details) {
+      if (bannerPrimary && typeof primary === 'string') {
+        bannerPrimary.textContent = primary;
+      }
+      if (bannerDetails && typeof details === 'string') {
+        bannerDetails.textContent = details;
+      }
+    }
+
+    async function recordProgress(eventType, details = {}) {
+      if (!sessionEventUrl) {
+        return;
+      }
+
+      try {
+        const response = await fetch(sessionEventUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({ event_type: eventType, details })
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await response.json();
+        if (payload.banner) {
+          updateBanner(payload.banner.primary, payload.banner.details);
+        }
+      } catch (error) {
+        console.warn('Unable to record session event', error);
+      }
+    }
+
     function showReportQuestion(area) {
+      selectedArea = area;
       if (selectedAreaLabel) {
         selectedAreaLabel.textContent = area;
       }
@@ -229,7 +274,8 @@
           const button = document.createElement('button');
           button.type = 'button';
           button.textContent = label;
-          button.addEventListener('click', () => {
+          button.addEventListener('click', async () => {
+            await recordProgress('report_selected', { area: selectedArea, report: label });
             window.location.href = href;
           });
           reportOptions.appendChild(button);
@@ -253,6 +299,7 @@
       reportQuestion.classList.remove('active');
       prototypeMessage.hidden = true;
       reportOptions.innerHTML = '';
+      selectedArea = null;
       const firstAreaButton = areaQuestion.querySelector('button');
       if (firstAreaButton) {
         firstAreaButton.focus();
@@ -264,12 +311,21 @@
 
     areaQuestion.querySelectorAll('button[data-area]').forEach((button) => {
       button.addEventListener('click', () => {
-        showReportQuestion(button.getAttribute('data-area'));
+        const area = button.getAttribute('data-area');
+        recordProgress('area_selected', { area });
+        showReportQuestion(area);
       });
     });
 
     if (backButton) {
-      backButton.addEventListener('click', showAreaQuestion);
+      backButton.addEventListener('click', () => {
+        if (selectedArea) {
+          recordProgress('return_to_area_selection', { area: selectedArea });
+        } else {
+          recordProgress('return_to_area_selection');
+        }
+        showAreaQuestion();
+      });
     }
   </script>
 {% endblock %}
