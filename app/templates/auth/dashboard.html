@@ -130,12 +130,12 @@
 {% endblock %}
 
 {% block content %}
-  {% if not is_staff %}
-    <div class="utility-bar">
-      <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
-      <a href="{{ url_for('auth.logout') }}">Log out</a>
-    </div>
+  <div class="utility-bar">
+    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
+    <a href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
 
+  {% if not is_staff %}
     <div class="page-header">
       <div>
         <div class="page-header__eyebrow">Operations Control Center</div>
