@@ -84,12 +84,14 @@ def dashboard() -> Any:
         return redirect(url_for("auth.login"))
 
     is_admin = user.role_enum is Role.ADMIN
+    is_staff = user.role_enum is Role.STAFF
     analysis_access = role_allowed(user.role, {Role.ADMIN, Role.MANAGER})
 
     return render_template(
         "auth/dashboard.html",
         user=user,
         is_admin=is_admin,
+        is_staff=is_staff,
         analysis_access=analysis_access,
     )
 
