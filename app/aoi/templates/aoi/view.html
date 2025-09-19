@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}AOI Inspection Data Sheet{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--fluid{% endblock %}
+{% block styles %}
+  {{ super() }}
+  .aoi-view {
+    background: #ffffff;
+    border: 1px solid #d4d6da;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 16px 32px rgba(15, 76, 92, 0.12);
+  }
+  .aoi-view header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    border-bottom: 2px solid #d4d6da;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+  }
+  .aoi-view h1 {
+    font-size: 1.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .aoi-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .aoi-grid.two-column {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .aoi-grid.three-column {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+  .aoi-field {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .aoi-field span.label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    color: #6b7789;
+  }
+  .aoi-field span.value {
+    font-size: 1rem;
+  }
+  .aoi-section {
+    margin-bottom: 2rem;
+  }
+  .aoi-section h2 {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  table.aoi-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.aoi-table th,
+  table.aoi-table td {
+    border: 1px solid #d4d6da;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+  .aoi-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .aoi-toolbar a {
+    border: 1px solid #0f4c5c;
+    padding: 0.55rem 0.9rem;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+  }
+  .aoi-comments {
+    white-space: pre-wrap;
+    background: #f8fafc;
+    border: 1px solid #d4d6da;
+    padding: 1rem;
+  }
+{% endblock %}
+{% block content %}
+  <div class="aoi-view">
+    <div class="aoi-toolbar">
+      <a class="button button--outline" href="{{ url_for('aoi.print_form', form_id=form.id) }}" target="_blank">Print / PDF</a>
+      <a class="button button--outline" href="{{ url_for('aoi.print_form', form_id=form.id, format='pdf') }}" target="_blank">Download PDF</a>
+    </div>
+    <header>
+      <div>
+        <h1>AOI Inspection Data Sheet</h1>
+        <div class="aoi-field">
+          <span class="label">Form #</span>
+          <span class="value">{{ form.form_number }}</span>
+        </div>
+        <div class="aoi-field">
+          <span class="label">Form Rev</span>
+          <span class="value">{{ form.form_rev }}</span>
+        </div>
+      </div>
+      <div class="aoi-grid">
+        <div class="aoi-field">
+          <span class="label">Date</span>
+          <span class="value">{{ form.date.strftime('%Y-%m-%d') }}</span>
+        </div>
+        <div class="aoi-field">
+          <span class="label">Type</span>
+          <span class="value">{{ form.type }}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="aoi-section">
+      <h2>Job Identifiers</h2>
+      <div class="aoi-grid two-column">
+        <div class="aoi-field"><span class="label">Customer</span><span class="value">{{ form.customer or '\u2014' }}</span></div>
+        <div class="aoi-field"><span class="label">Assembly</span><span class="value">{{ form.assembly or '\u2014' }}</span></div>
+        <div class="aoi-field"><span class="label">Job #</span><span class="value">{{ form.job_number or '\u2014' }}</span></div>
+        <div class="aoi-field"><span class="label">Revision</span><span class="value">{{ form.revision or '\u2014' }}</span></div>
+        <div class="aoi-field"><span class="label"># of Panels</span><span class="value">{{ form.panels_count or 0 }}</span></div>
+        <div class="aoi-field"><span class="label"># of Boards</span><span class="value">{{ form.boards_count or 0 }}</span></div>
+        <div class="aoi-field"><span class="label">Inspector</span><span class="value">{{ form.inspector or '\u2014' }}</span></div>
+      </div>
+    </section>
+
+    <section class="aoi-section">
+      <h2>Lot Inspection Result</h2>
+      <div class="aoi-grid three-column">
+        <div class="aoi-field"><span class="label">Quantity Inspected</span><span class="value">{{ form.qty_inspected }}</span></div>
+        <div class="aoi-field"><span class="label">Quantity Rejected</span><span class="value">{{ form.qty_rejected }}</span></div>
+        <div class="aoi-field"><span class="label">Quantity Accepted</span><span class="value">{{ form.qty_accepted }}</span></div>
+      </div>
+    </section>
+
+    <section class="aoi-section">
+      <h2>Reason for Rejection</h2>
+      <table class="aoi-table">
+        <thead>
+          <tr>
+            <th scope="col">Quantity</th>
+            <th scope="col">Problem Code</th>
+            <th scope="col">Defective Problem</th>
+            <th scope="col">Reference Designator(s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rejection in form.rejections %}
+            <tr>
+              <td>{{ rejection.quantity }}</td>
+              <td>{{ rejection.problem_code }}</td>
+              <td>{{ rejection.problem.name }}</td>
+              <td>{{ rejection.reference_designators or '\u2014' }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="4">No rejections recorded.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    {% if form.board_data %}
+      <section class="aoi-section">
+        <h2>Board Data</h2>
+        <table class="aoi-table">
+          <thead>
+            <tr>
+              <th scope="col">Board ID / Serial</th>
+              <th scope="col">Reference Designator(s)</th>
+              <th scope="col">Problem Code</th>
+              <th scope="col">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for board in form.board_data %}
+              <tr>
+                <td>{{ board.board_id or '\u2014' }}</td>
+                <td>{{ board.reference_designators or '\u2014' }}</td>
+                <td>{{ board.problem_code }}{% if board.problem %} — {{ board.problem.name }}{% endif %}</td>
+                <td>{{ board.comments or '\u2014' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endif %}
+
+    {% if form.comments %}
+      <section class="aoi-section">
+        <h2>Comments</h2>
+        <div class="aoi-comments">{{ form.comments }}</div>
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}

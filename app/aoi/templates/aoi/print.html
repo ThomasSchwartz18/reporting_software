@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AOI Inspection Data Sheet</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm;
+      }
+
+      body {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        color: #1f2933;
+        background: #ffffff;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      h2 {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      .sheet {
+        display: grid;
+        grid-template-columns: 1fr 240px;
+        gap: 1rem;
+      }
+
+      .main {
+        border: 1px solid #cdd5df;
+        padding: 1.2rem 1.6rem;
+      }
+
+      .sidebar {
+        border: 1px solid #cdd5df;
+        padding: 1rem 1.2rem;
+        font-size: 0.8rem;
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+
+      .meta-item {
+        display: grid;
+        gap: 0.2rem;
+        font-size: 0.85rem;
+      }
+
+      .meta-item span.label {
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        color: #6b7280;
+        text-transform: uppercase;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+      }
+
+      th,
+      td {
+        border: 1px solid #cdd5df;
+        padding: 0.4rem 0.5rem;
+        vertical-align: top;
+      }
+
+      .comments {
+        min-height: 80px;
+        border: 1px solid #cdd5df;
+        padding: 0.6rem;
+        white-space: pre-wrap;
+      }
+
+      footer {
+        margin-top: 1rem;
+        font-size: 0.7rem;
+        color: #6b7280;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .codes-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.3rem;
+      }
+
+      .codes-list li {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .header-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #cdd5df;
+        padding-bottom: 0.75rem;
+      }
+
+      .header-block {
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .header-block span.label {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+
+      .summary-grid .meta-item {
+        font-size: 0.85rem;
+      }
+
+      .problem-codes-title {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        margin-bottom: 0.6rem;
+      }
+
+      @media print {
+        body {
+          zoom: 0.95;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <main class="main">
+        <div class="header-row">
+          <div class="header-block">
+            <h1>AOI Inspection Data Sheet</h1>
+            <div class="meta-item">
+              <span class="label">Form #</span>
+              <span>{{ form.form_number }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date</span>
+              <span>{{ form.date.strftime('%Y-%m-%d') }}</span>
+            </div>
+          </div>
+          <div class="header-block">
+            <div class="meta-item">
+              <span class="label">Type</span>
+              <span>{{ form.type }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Form Rev</span>
+              <span>{{ form.form_rev }}</span>
+            </div>
+          </div>
+        </div>
+
+        <section>
+          <h2>Job Identifiers</h2>
+          <div class="meta-grid">
+            <div class="meta-item"><span class="label">Customer</span><span>{{ form.customer or '\u2014' }}</span></div>
+            <div class="meta-item"><span class="label">Assembly</span><span>{{ form.assembly or '\u2014' }}</span></div>
+            <div class="meta-item"><span class="label">Job #</span><span>{{ form.job_number or '\u2014' }}</span></div>
+            <div class="meta-item"><span class="label">Revision</span><span>{{ form.revision or '\u2014' }}</span></div>
+            <div class="meta-item"><span class="label"># of Panels</span><span>{{ form.panels_count or 0 }}</span></div>
+            <div class="meta-item"><span class="label"># of Boards</span><span>{{ form.boards_count or 0 }}</span></div>
+            <div class="meta-item"><span class="label">Inspector</span><span>{{ form.inspector or '\u2014' }}</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Lot Inspection Result</h2>
+          <div class="summary-grid">
+            <div class="meta-item"><span class="label">Quantity Inspected</span><span>{{ form.qty_inspected }}</span></div>
+            <div class="meta-item"><span class="label">Quantity Rejected</span><span>{{ form.qty_rejected }}</span></div>
+            <div class="meta-item"><span class="label">Quantity Accepted</span><span>{{ form.qty_accepted }}</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Reason for Rejection</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Quantity</th>
+                <th>Problem Code</th>
+                <th>Defective Problem</th>
+                <th>Reference Designator(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rejection in form.rejections %}
+                <tr>
+                  <td>{{ rejection.quantity }}</td>
+                  <td>{{ rejection.problem_code }}</td>
+                  <td>{{ rejection.problem.name }}</td>
+                  <td>{{ rejection.reference_designators or '\u2014' }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4">No rejections recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+
+        {% if form.board_data %}
+          <section>
+            <h2>Board Data</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Board ID / Serial</th>
+                  <th>Reference Designator(s)</th>
+                  <th>Problem Code</th>
+                  <th>Comments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for board in form.board_data %}
+                  <tr>
+                    <td>{{ board.board_id or '\u2014' }}</td>
+                    <td>{{ board.reference_designators or '\u2014' }}</td>
+                    <td>{{ board.problem_code }}{% if board.problem %} — {{ board.problem.name }}{% endif %}</td>
+                    <td>{{ board.comments or '\u2014' }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </section>
+        {% endif %}
+
+        {% if form.comments %}
+          <section>
+            <h2>Comments</h2>
+            <div class="comments">{{ form.comments }}</div>
+          </section>
+        {% endif %}
+
+        <footer>
+          <span>Generated by Reporting Software</span>
+          <span>{{ form.updated_at.strftime('%Y-%m-%d %H:%M') if form.updated_at else '' }}</span>
+        </footer>
+      </main>
+      <aside class="sidebar">
+        <div class="problem-codes-title">Problem Codes Reference</div>
+        <ol class="codes-list">
+          {% for entry in problem_codes %}
+            <li><strong>{{ entry.code }}</strong> {{ entry.name }}</li>
+          {% endfor %}
+        </ol>
+      </aside>
+    </div>
+  </body>
+</html>
