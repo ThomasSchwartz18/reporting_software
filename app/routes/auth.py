@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import date
 from typing import Any
 
 from flask import (
@@ -101,7 +102,15 @@ def report_aoi_smt() -> Any:
     if user is None:
         return redirect(url_for("auth.login"))
 
-    return render_template("auth/report_aoi_smt.html", user=user)
+    return render_template(
+        "auth/report_inspection_sheet.html",
+        user=user,
+        page_title="SMT Data Inspection Sheet",
+        report_type="SMT",
+        report_date=date.today(),
+        defect_rows=range(1, 11),
+        rejection_rows=range(1, 11),
+    )
 
 
 @auth_bp.route("/reports/aoi/th")
@@ -112,7 +121,15 @@ def report_aoi_th() -> Any:
     if user is None:
         return redirect(url_for("auth.login"))
 
-    return render_template("auth/report_aoi_th.html", user=user)
+    return render_template(
+        "auth/report_inspection_sheet.html",
+        user=user,
+        page_title="TH Data Inspection Sheet",
+        report_type="TH",
+        report_date=date.today(),
+        defect_rows=range(1, 11),
+        rejection_rows=range(1, 11),
+    )
 
 
 @auth_bp.route("/logout")
