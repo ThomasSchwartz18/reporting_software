@@ -23,15 +23,22 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-DEFAULT_USERNAME = "2276"
-DEFAULT_PASSWORD = "2278!"
+DEFAULT_USERS: tuple[tuple[str, str], ...] = (
+    ("2276", "2278!"),
+    ("Schwartz", "2276"),
+)
 
 
 def ensure_default_user() -> None:
     """Ensure the default user exists in the database."""
-    user = User.query.filter_by(username=DEFAULT_USERNAME).first()
-    if user is None:
-        user = User(username=DEFAULT_USERNAME)
-        user.set_password(DEFAULT_PASSWORD)
-        db.session.add(user)
+    created_user = False
+    for username, password in DEFAULT_USERS:
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            user = User(username=username)
+            user.set_password(password)
+            db.session.add(user)
+            created_user = True
+
+    if created_user:
         db.session.commit()

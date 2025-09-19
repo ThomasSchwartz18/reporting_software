@@ -13,6 +13,8 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """Render the login form and handle submissions."""
+    users = User.query.order_by(User.username).all()
+
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
@@ -26,7 +28,7 @@ def login():
 
         flash("Invalid username or password.", "error")
 
-    return render_template("auth/login.html")
+    return render_template("auth/login.html", users=users)
 
 
 @auth_bp.route("/dashboard")
