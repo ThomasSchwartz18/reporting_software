@@ -19,9 +19,14 @@ class AoiProblemCode(db.Model):
 
     code: int = mapped_column(db.Integer, primary_key=True)
     name: str = mapped_column(db.String(120), nullable=False, unique=True)
+    part_type: str | None = mapped_column(db.String(120), nullable=True)
 
-    def to_dict(self) -> dict[str, str | int]:
-        return {"code": self.code, "name": self.name}
+    def to_dict(self) -> dict[str, str | int | None]:
+        return {
+            "code": self.code,
+            "name": self.name,
+            "part_type": self.part_type,
+        }
 
 
 @dataclass

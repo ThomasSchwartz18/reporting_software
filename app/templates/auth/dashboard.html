@@ -43,6 +43,10 @@
       transition: transform 0.2s ease;
     }
 
+    .area-selection-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
     .option-grid button::after {
       content: "";
       position: absolute;
@@ -172,13 +176,18 @@
           <div class="questionnaire-meta">Step 1</div>
           <h2 class="question-title">Select your area</h2>
         {% endif %}
-        <div class="option-grid two-column">
-          <button type="button" data-area="AOI">AOI</button>
-          <button type="button" data-area="Rework">Rework</button>
-          <button type="button" data-area="Hand Assembly">Hand Assembly</button>
-          <button type="button" data-area="Solder">Solder</button>
-          <button type="button" data-area="SMT">SMT</button>
-          <button type="button" data-area="RMA">RMA</button>
+        {% set production_areas = [
+          "AOI",
+          "Rework",
+          "Hand Assembly",
+          "Solder",
+          "SMT",
+          "RMA"
+        ] %}
+        <div class="option-grid area-selection-grid" role="group" aria-label="Production areas">
+          {% for area in production_areas %}
+            <button type="button" data-area="{{ area }}" aria-pressed="false">{{ area }}</button>
+          {% endfor %}
         </div>
       </div>
 
@@ -217,6 +226,7 @@
     const backButton = document.getElementById('back-button');
     const bannerPrimary = document.querySelector('.login-confirmation__primary');
     const bannerDetails = document.querySelector('.login-confirmation__details');
+    const areaButtons = Array.from(areaQuestion.querySelectorAll('button[data-area]'));
     let selectedArea = null;
 
     const reportRoutes = {
@@ -300,6 +310,7 @@
       prototypeMessage.hidden = true;
       reportOptions.innerHTML = '';
       selectedArea = null;
+      areaButtons.forEach((btn) => btn.setAttribute('aria-pressed', 'false'));
       const firstAreaButton = areaQuestion.querySelector('button');
       if (firstAreaButton) {
         firstAreaButton.focus();
@@ -309,9 +320,12 @@
       }
     }
 
-    areaQuestion.querySelectorAll('button[data-area]').forEach((button) => {
+    areaButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const area = button.getAttribute('data-area');
+        areaButtons.forEach((btn) => {
+          btn.setAttribute('aria-pressed', btn === button ? 'true' : 'false');
+        });
         recordProgress('area_selected', { area });
         showReportQuestion(area);
       });
