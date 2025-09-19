@@ -213,6 +213,35 @@
         color: #0f4c5c;
       }
 
+      .login-confirmation {
+        background: linear-gradient(135deg, rgba(15, 76, 92, 0.18), rgba(15, 76, 92, 0.05));
+        border: 1px solid rgba(15, 76, 92, 0.4);
+        color: var(--text-primary);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: space-between;
+        margin: 0 auto 1.5rem;
+        max-width: min(1200px, 100%);
+        padding: 0.9rem 1.1rem;
+      }
+
+      .login-confirmation__primary {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .login-confirmation__details {
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+      }
+
+      .login-confirmation__details strong {
+        color: var(--accent);
+      }
+
       .stack {
         display: flex;
         flex-direction: column;
@@ -381,6 +410,16 @@
     </style>
   </head>
   <body class="{% block body_class %}{% endblock %}">
+    {% if session.get("user_id") %}
+      <div class="login-confirmation" role="status" aria-live="polite">
+        <span class="login-confirmation__primary">Logged in successfully</span>
+        <span class="login-confirmation__details">
+          You are signed in as <strong>{{ session.get("username") }}</strong>
+          ({{ session.get("role", "user")|title }}). Double-check that you're
+          working under the correct account before continuing.
+        </span>
+      </div>
+    {% endif %}
     <div class="container {% block container_class %}{% endblock %}">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
