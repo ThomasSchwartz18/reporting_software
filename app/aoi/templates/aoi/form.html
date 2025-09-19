@@ -219,6 +219,11 @@
     background: rgba(18, 59, 93, 0.08);
   }
 
+  .aoi-problem-codes__label {
+    margin-left: 0.35rem;
+    font-weight: 400;
+  }
+
   .aoi-comments textarea {
     min-height: 120px;
   }
@@ -466,8 +471,13 @@
       <ul class="aoi-problem-codes">
         {% for entry in problem_codes %}
           <li>
-            <button type="button" data-problem-code="{{ entry.code }}">
-              <strong>{{ entry.code }}</strong> — {{ entry.name }}
+            <button
+              type="button"
+              data-problem-code="{{ entry.code }}"
+              title="{{ entry.name }}{% if entry.part_type %} • {{ entry.part_type }}{% endif %}"
+            >
+              <strong>{{ entry.code }}</strong>
+              <span class="aoi-problem-codes__label">— {{ entry.name }}{% if entry.part_type %} · {{ entry.part_type }}{% endif %}</span>
             </button>
           </li>
         {% endfor %}
@@ -482,9 +492,14 @@
       </td>
       <td>
         <select class="aoi-rejection-code">
-          <option value="">Select</option>
+          <option value="" title="Select a problem code">Select</option>
           {% for entry in problem_codes %}
-            <option value="{{ entry.code }}">{{ entry.code }}</option>
+            <option
+              value="{{ entry.code }}"
+              title="{{ entry.name }}{% if entry.part_type %} • {{ entry.part_type }}{% endif %}"
+            >
+              {{ entry.code }}
+            </option>
           {% endfor %}
         </select>
       </td>
@@ -511,9 +526,14 @@
       <div class="aoi-field-group">
         <label>Problem Code</label>
         <select class="aoi-board-code">
-          <option value="">Select</option>
+          <option value="" title="Select a problem code">Select</option>
           {% for entry in problem_codes %}
-            <option value="{{ entry.code }}">{{ entry.code }} — {{ entry.name }}</option>
+            <option
+              value="{{ entry.code }}"
+              title="{{ entry.name }}{% if entry.part_type %} • {{ entry.part_type }}{% endif %}"
+            >
+              {{ entry.code }}
+            </option>
           {% endfor %}
         </select>
       </div>
@@ -528,12 +548,25 @@
   </template>
 
   <script>
+    const wrapper = document.querySelector('.aoi-wrapper');
+    const rawProblemCodes = wrapper ? JSON.parse(wrapper.dataset.problemCodes) : [];
     const PROBLEM_CODES = new Map(
-      JSON.parse(document.querySelector('.aoi-wrapper').dataset.problemCodes).map((entry) => [
+      rawProblemCodes.map((entry) => [
         String(entry.code),
-        entry.name,
+        {
+          name: entry.name,
+          partType: entry.part_type || '',
+        },
       ]),
     );
+
+    function formatProblemDetails(code) {
+      const info = PROBLEM_CODES.get(String(code));
+      if (!info) {
+        return '';
+      }
+      return [info.name, info.partType].filter(Boolean).join(' • ');
+    }
 
     const form = document.getElementById('aoi-form');
     const rejectionBody = document.getElementById('rejection-rows');
@@ -580,8 +613,13 @@
       const deleteButton = row.querySelector('.aoi-delete-row');
 
       function updateName() {
-        const name = PROBLEM_CODES.get(codeSelect.value);
-        nameCell.textContent = name || nameCell.dataset.placeholder || '';
+        const details = formatProblemDetails(codeSelect.value);
+        if (details) {
+          nameCell.textContent = details;
+        } else {
+          nameCell.textContent = nameCell.dataset.placeholder || '';
+        }
+        codeSelect.title = details || '';
       }
 
       quantityInput.addEventListener('input', markDirty);
@@ -608,6 +646,13 @@
         input.addEventListener('input', markDirty);
         input.addEventListener('change', markDirty);
       });
+      const boardCodeSelect = row.querySelector('.aoi-board-code');
+      if (boardCodeSelect) {
+        boardCodeSelect.addEventListener('change', () => {
+          boardCodeSelect.title = formatProblemDetails(boardCodeSelect.value);
+        });
+        boardCodeSelect.title = formatProblemDetails(boardCodeSelect.value);
+      }
       row.querySelector('.aoi-delete-row').addEventListener('click', () => {
         row.remove();
         markDirty();

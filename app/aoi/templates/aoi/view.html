@@ -154,7 +154,13 @@
             <tr>
               <td>{{ rejection.quantity }}</td>
               <td>{{ rejection.problem_code }}</td>
-              <td>{{ rejection.problem.name }}</td>
+              <td>
+                {% if rejection.problem %}
+                  {{ rejection.problem.name }}{% if rejection.problem.part_type %} · {{ rejection.problem.part_type }}{% endif %}
+                {% else %}
+                  \u2014
+                {% endif %}
+              </td>
               <td>{{ rejection.reference_designators or '\u2014' }}</td>
             </tr>
           {% else %}
@@ -183,7 +189,12 @@
               <tr>
                 <td>{{ board.board_id or '\u2014' }}</td>
                 <td>{{ board.reference_designators or '\u2014' }}</td>
-                <td>{{ board.problem_code }}{% if board.problem %} — {{ board.problem.name }}{% endif %}</td>
+                <td>
+                  {{ board.problem_code }}
+                  {% if board.problem %}
+                    — {{ board.problem.name }}{% if board.problem.part_type %} · {{ board.problem.part_type }}{% endif %}
+                  {% endif %}
+                </td>
                 <td>{{ board.comments or '\u2014' }}</td>
               </tr>
             {% endfor %}

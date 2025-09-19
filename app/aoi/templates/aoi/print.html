@@ -217,7 +217,13 @@
                 <tr>
                   <td>{{ rejection.quantity }}</td>
                   <td>{{ rejection.problem_code }}</td>
-                  <td>{{ rejection.problem.name }}</td>
+                  <td>
+                    {% if rejection.problem %}
+                      {{ rejection.problem.name }}{% if rejection.problem.part_type %} · {{ rejection.problem.part_type }}{% endif %}
+                    {% else %}
+                      \u2014
+                    {% endif %}
+                  </td>
                   <td>{{ rejection.reference_designators or '\u2014' }}</td>
                 </tr>
               {% else %}
@@ -246,7 +252,12 @@
                   <tr>
                     <td>{{ board.board_id or '\u2014' }}</td>
                     <td>{{ board.reference_designators or '\u2014' }}</td>
-                    <td>{{ board.problem_code }}{% if board.problem %} — {{ board.problem.name }}{% endif %}</td>
+                    <td>
+                      {{ board.problem_code }}
+                      {% if board.problem %}
+                        — {{ board.problem.name }}{% if board.problem.part_type %} · {{ board.problem.part_type }}{% endif %}
+                      {% endif %}
+                    </td>
                     <td>{{ board.comments or '\u2014' }}</td>
                   </tr>
                 {% endfor %}
@@ -271,7 +282,10 @@
         <div class="problem-codes-title">Problem Codes Reference</div>
         <ol class="codes-list">
           {% for entry in problem_codes %}
-            <li><strong>{{ entry.code }}</strong> {{ entry.name }}</li>
+            <li>
+              <strong>{{ entry.code }}</strong>
+              {{ entry.name }}{% if entry.part_type %} · {{ entry.part_type }}{% endif %}
+            </li>
           {% endfor %}
         </ol>
       </aside>
