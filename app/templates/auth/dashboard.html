@@ -140,6 +140,16 @@
       <div>
         <h1 class="page-header__title">Welcome back, {{ user.username }}</h1>
       </div>
+      {% if analysis_access or is_admin %}
+        <div class="page-header__actions">
+          {% if analysis_access %}
+            <a class="button button--outline button--sm" href="{{ url_for('auth.analysis') }}">Analysis</a>
+          {% endif %}
+          {% if is_admin %}
+            <a class="button button--sm" href="{{ url_for('auth.settings') }}">Configuration</a>
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
   {% endif %}
 
