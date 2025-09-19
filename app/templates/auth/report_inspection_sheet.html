@@ -6,69 +6,124 @@
 
 {% block styles %}
   {{ super() }}
-  .inspection-sheet {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .sheet-card {
+  .sheet-wrapper {
     background: #ffffff;
-    border: 1px solid rgba(15, 76, 92, 0.15);
-    padding: 1.5rem;
+    border: 2px solid rgba(15, 76, 92, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    padding: 2rem 2.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.75rem;
   }
 
-  .sheet-card h2 {
-    margin: 0;
-    font-size: 0.95rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .info-card {
-    grid-column: span 1;
-  }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 0.75rem 1rem;
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(15, 76, 92, 0.12);
+    padding-bottom: 0.75rem;
   }
 
-  .info-grid label {
+  .sheet-header__title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sheet-header__title span {
     font-size: 0.75rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
-  .info-grid input[type="text"],
-  .info-grid input[type="date"],
-  .info-grid input[type="number"] {
-    width: 100%;
-    padding: 0.65rem 0.75rem;
-    border: 1px solid var(--panel-border);
-    background: #f7f8fa;
-    font-size: 0.9rem;
+  .sheet-header__title h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
-  .info-grid input[readonly] {
+  .sheet-header a {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .panel {
+    border: 1px solid rgba(15, 76, 92, 0.12);
+    padding: 1.25rem 1.4rem;
+    background: rgba(249, 250, 251, 0.65);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+  }
+
+  .panel h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .info-panel {
+    grid-column: span 7;
+  }
+
+  .summary-panel {
+    grid-column: span 5;
+  }
+
+  .table-panel {
+    grid-column: span 12;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) 1.3fr;
+    gap: 0.65rem 0.85rem;
+    align-items: center;
+  }
+
+  .field-grid label {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field-grid input[type="text"],
+  .field-grid input[type="date"],
+  .field-grid input[type="number"] {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(15, 76, 92, 0.22);
+    background: #ffffff;
+    font-size: 0.88rem;
+  }
+
+  .field-grid input[readonly] {
     background: #e8eef2;
     color: var(--text-secondary);
   }
 
-  .info-grid input:focus {
+  .field-grid input:focus {
     outline: 2px solid rgba(15, 76, 92, 0.25);
-    background: #ffffff;
   }
 
   .signature-field {
-    border: 1px solid var(--panel-border);
-    height: 56px;
+    border: 1px solid rgba(15, 76, 92, 0.22);
+    height: 52px;
     background: repeating-linear-gradient(
       to bottom,
       #ffffff,
@@ -76,322 +131,391 @@
       rgba(15, 76, 92, 0.05) 6px,
       rgba(15, 76, 92, 0.05) 7px
     );
-    position: relative;
   }
 
   .signature-caption {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-top: 0.35rem;
-    display: block;
     text-align: right;
   }
 
-  .quantities-card {
-    align-self: flex-start;
-  }
-
-  .field-stack {
+  .summary-grid {
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
   }
 
-  .field-stack label {
-    font-size: 0.75rem;
+  .summary-grid label {
+    display: block;
+    font-size: 0.7rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
+    margin-bottom: 0.35rem;
   }
 
-  .field-stack input {
+  .summary-grid input {
     width: 100%;
-    padding: 0.75rem 0.85rem;
-    border: 1px solid var(--panel-border);
-    background: #f7f8fa;
-    font-size: 0.95rem;
-  }
-
-  .field-stack input:focus {
-    outline: 2px solid rgba(15, 76, 92, 0.25);
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(15, 76, 92, 0.22);
     background: #ffffff;
+    font-size: 0.92rem;
   }
 
-  .defect-card,
-  .rejection-card {
-    grid-column: span 2;
+  .summary-grid input:focus {
+    outline: 2px solid rgba(15, 76, 92, 0.25);
   }
 
-  .defect-card table,
-  .rejection-card table {
+  table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
-  .defect-card th,
-  .defect-card td,
-  .rejection-card th,
-  .rejection-card td {
-    border: 1px solid rgba(15, 76, 92, 0.15);
-    padding: 0.6rem 0.75rem;
+  th,
+  td {
+    border: 1px solid rgba(15, 76, 92, 0.18);
+    padding: 0.55rem 0.65rem;
+    vertical-align: top;
   }
 
-  .defect-card th,
-  .rejection-card th {
+  th {
     text-transform: uppercase;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.18em;
-    background: rgba(15, 76, 92, 0.07);
+    background: rgba(15, 76, 92, 0.08);
     color: var(--text-secondary);
-    text-align: left;
   }
 
-  .defect-card input[type="text"],
-  .rejection-card input[type="text"],
-  .rejection-card textarea {
+  td input,
+  td textarea {
     width: 100%;
     border: none;
     background: transparent;
-    font-size: 0.9rem;
-    font-family: inherit;
-    resize: vertical;
+    font: inherit;
   }
 
-  .defect-card input[type="text"]:focus,
-  .rejection-card input[type="text"]:focus,
-  .rejection-card textarea:focus {
+  td textarea {
+    min-height: 54px;
+    resize: vertical;
+    max-height: 180px;
+  }
+
+  td input:focus,
+  td textarea:focus {
     outline: 2px solid rgba(15, 76, 92, 0.25);
     background: #ffffff;
-  }
-
-  .rejection-card textarea {
-    min-height: 60px;
-  }
-
-  .notes-area {
-    margin-top: 1rem;
   }
 
   .notes-area label {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
   }
 
   .notes-area textarea {
     width: 100%;
-    min-height: 100px;
-    border: 1px solid var(--panel-border);
-    background: #f7f8fa;
-    padding: 0.75rem 0.85rem;
-    font-size: 0.95rem;
+    min-height: 80px;
+    border: 1px solid rgba(15, 76, 92, 0.22);
+    background: #ffffff;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
     resize: vertical;
   }
 
   .notes-area textarea:focus {
     outline: 2px solid rgba(15, 76, 92, 0.25);
-    background: #ffffff;
   }
 
-  @media (max-width: 1024px) {
-    .defect-card,
-    .rejection-card {
-      grid-column: span 1;
+  .progressive-row {
+    display: none;
+  }
+
+  .progressive-row.is-active {
+    display: table-row;
+  }
+
+  @media (max-width: 1100px) {
+    .info-panel {
+      grid-column: span 12;
     }
 
-    .info-grid {
+    .summary-panel {
+      grid-column: span 12;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .sheet-wrapper {
+      padding: 1.5rem;
+    }
+
+    .field-grid {
       grid-template-columns: 1fr;
     }
 
-    .info-grid label {
-      margin-bottom: 0.15rem;
+    .sheet-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .sheet-header a {
+      align-self: stretch;
     }
   }
 {% endblock %}
 
 {% block content %}
-  <div class="toolbar">
-    <span>Data Inspection</span>
-    <a href="{{ url_for('auth.dashboard') }}">Back to selection</a>
-  </div>
-  <h1>{{ page_title }}</h1>
-
-  <div class="inspection-sheet">
-    <section class="sheet-card info-card">
-      <h2>Job Information</h2>
-      <div class="info-grid">
-        <label for="report-type">Type</label>
-        <input
-          id="report-type"
-          name="report_type"
-          type="text"
-          value="{{ report_type }}"
-          readonly
-        />
-
-        <label for="report-date">Date</label>
-        <input
-          id="report-date"
-          name="report_date"
-          type="date"
-          value="{{ report_date.isoformat() }}"
-        />
-
-        <label for="customer">Customer</label>
-        <input id="customer" name="customer" type="text" placeholder="Enter customer" />
-
-        <label for="assembly-number">Assembly Number</label>
-        <input
-          id="assembly-number"
-          name="assembly_number"
-          type="text"
-          placeholder="Enter assembly number"
-        />
-
-        <label for="job-number">Job Number</label>
-        <input
-          id="job-number"
-          name="job_number"
-          type="text"
-          placeholder="Enter job number"
-        />
-
-        <label for="revision">Rev</label>
-        <input id="revision" name="revision" type="text" placeholder="Enter revision" />
-
-        <label for="total-boards">Total Boards in Job</label>
-        <input
-          id="total-boards"
-          name="total_boards"
-          type="number"
-          min="0"
-          placeholder="Enter total quantity"
-        />
-
-        <label for="operator-signature">Operator</label>
-        <div>
-          <div class="signature-field" id="operator-signature" aria-label="Operator signature"></div>
-          <span class="signature-caption">Signature</span>
-        </div>
+  <div class="sheet-wrapper">
+    <div class="sheet-header">
+      <div class="sheet-header__title">
+        <span>Data Inspection Sheet</span>
+        <h1>{{ page_title }}</h1>
       </div>
-    </section>
+      <a href="{{ url_for('auth.dashboard') }}">Back to Dashboard</a>
+    </div>
 
-    <section class="sheet-card quantities-card">
-      <h2>Inspection Summary</h2>
-      <div class="field-stack">
-        <div>
-          <label for="inspected-qty">Boards Inspected</label>
+    <div class="sheet-grid">
+      <section class="panel info-panel">
+        <h2>Job Information</h2>
+        <div class="field-grid">
+          <label for="report-type">Type</label>
           <input
-            id="inspected-qty"
-            name="inspected_qty"
+            id="report-type"
+            name="report_type"
+            type="text"
+            value="{{ report_type }}"
+            readonly
+          />
+
+          <label for="report-date">Date</label>
+          <input
+            id="report-date"
+            name="report_date"
+            type="date"
+            value="{{ report_date.isoformat() }}"
+          />
+
+          <label for="customer">Customer</label>
+          <input id="customer" name="customer" type="text" placeholder="Enter customer" />
+
+          <label for="assembly-number">Assembly Number</label>
+          <input
+            id="assembly-number"
+            name="assembly_number"
+            type="text"
+            placeholder="Enter assembly number"
+          />
+
+          <label for="job-number">Job Number</label>
+          <input
+            id="job-number"
+            name="job_number"
+            type="text"
+            placeholder="Enter job number"
+          />
+
+          <label for="revision">Rev</label>
+          <input id="revision" name="revision" type="text" placeholder="Enter revision" />
+
+          <label for="total-boards">Total Boards in Job</label>
+          <input
+            id="total-boards"
+            name="total_boards"
             type="number"
             min="0"
-            placeholder="Enter inspected quantity"
+            placeholder="Enter total quantity"
           />
+
+          <label for="operator-signature">Operator</label>
+          <div>
+            <div
+              class="signature-field"
+              id="operator-signature"
+              aria-label="Operator signature"
+            ></div>
+            <span class="signature-caption">Signature</span>
+          </div>
         </div>
-        <div>
-          <label for="rejected-qty">Boards Rejected</label>
-          <input
-            id="rejected-qty"
-            name="rejected_qty"
-            type="number"
-            min="0"
-            placeholder="Enter rejected quantity"
-          />
+      </section>
+
+      <section class="panel summary-panel">
+        <h2>Inspection Summary</h2>
+        <div class="summary-grid">
+          <div>
+            <label for="inspected-qty">Boards Inspected</label>
+            <input
+              id="inspected-qty"
+              name="inspected_qty"
+              type="number"
+              min="0"
+              placeholder="Enter inspected quantity"
+            />
+          </div>
+          <div>
+            <label for="rejected-qty">Boards Rejected</label>
+            <input
+              id="rejected-qty"
+              name="rejected_qty"
+              type="number"
+              min="0"
+              placeholder="Enter rejected quantity"
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="sheet-card defect-card">
-      <h2>Defect Code Reference</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Code</th>
-            <th scope="col">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in defect_rows %}
+      <section class="panel table-panel">
+        <h2>Defect Code Reference</h2>
+        <table id="defect-table">
+          <thead>
             <tr>
-              <td>
-                <input
-                  type="text"
-                  name="defect_code_{{ row }}"
-                  aria-label="Defect code {{ row }}"
-                  placeholder="Enter code"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="defect_description_{{ row }}"
-                  aria-label="Defect description {{ row }}"
-                  placeholder="Enter description"
-                />
-              </td>
+              <th scope="col">Code</th>
+              <th scope="col">Description</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
+          </thead>
+          <tbody>
+            {% for row in defect_rows %}
+              <tr class="progressive-row{% if loop.first %} is-active{% endif %}" data-row="{{ loop.index0 }}">
+                <td>
+                  <input
+                    type="text"
+                    name="defect_code_{{ row }}"
+                    aria-label="Defect code {{ row }}"
+                    placeholder="Enter code"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="defect_description_{{ row }}"
+                    aria-label="Defect description {{ row }}"
+                    placeholder="Enter description"
+                  />
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
 
-    <section class="sheet-card rejection-card">
-      <h2>Reason for Rejection Log</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Board / Panel ID</th>
-            <th scope="col">Defect Code</th>
-            <th scope="col">Notes / Action Taken</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in rejection_rows %}
+      <section class="panel table-panel">
+        <h2>Reason for Rejection Log</h2>
+        <table id="rejection-table">
+          <thead>
             <tr>
-              <td>{{ row }}</td>
-              <td>
-                <input
-                  type="text"
-                  name="rejection_board_{{ row }}"
-                  aria-label="Board or panel identifier for row {{ row }}"
-                  placeholder="Enter identifier"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="rejection_defect_code_{{ row }}"
-                  aria-label="Defect code for row {{ row }}"
-                  placeholder="Reference code"
-                />
-              </td>
-              <td>
-                <textarea
-                  name="rejection_notes_{{ row }}"
-                  aria-label="Notes for row {{ row }}"
-                  placeholder="Document findings, disposition, or follow-up actions"
-                ></textarea>
-              </td>
+              <th scope="col">#</th>
+              <th scope="col">Board / Panel ID</th>
+              <th scope="col">Defect Code</th>
+              <th scope="col">Notes / Action Taken</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for row in rejection_rows %}
+              <tr class="progressive-row{% if loop.first %} is-active{% endif %}" data-row="{{ loop.index0 }}">
+                <td>{{ row }}</td>
+                <td>
+                  <input
+                    type="text"
+                    name="rejection_board_{{ row }}"
+                    aria-label="Board or panel identifier for row {{ row }}"
+                    placeholder="Enter identifier"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="rejection_defect_code_{{ row }}"
+                    aria-label="Defect code for row {{ row }}"
+                    placeholder="Reference code"
+                  />
+                </td>
+                <td>
+                  <textarea
+                    name="rejection_notes_{{ row }}"
+                    aria-label="Notes for row {{ row }}"
+                    placeholder="Document findings, disposition, or follow-up actions"
+                  ></textarea>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
-      <div class="notes-area">
-        <label for="general-notes">Additional Notes</label>
-        <textarea
-          id="general-notes"
-          name="general_notes"
-          placeholder="Capture any process notes, shift hand-offs, or follow-up requirements"
-        ></textarea>
-      </div>
-    </section>
+        <div class="notes-area">
+          <label for="general-notes">Additional Notes</label>
+          <textarea
+            id="general-notes"
+            name="general_notes"
+            placeholder="Capture any process notes, shift hand-offs, or follow-up requirements"
+          ></textarea>
+        </div>
+      </section>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      function rowHasContent(row) {
+        return Array.from(row.querySelectorAll('input, textarea')).some(function (field) {
+          return field.value && field.value.trim().length > 0;
+        });
+      }
+
+      function clearRow(row) {
+        row.querySelectorAll('input, textarea').forEach(function (field) {
+          field.value = '';
+        });
+      }
+
+      function setupProgressiveTable(tableId) {
+        var table = document.getElementById(tableId);
+        if (!table) {
+          return;
+        }
+
+        var rows = Array.from(table.querySelectorAll('tbody tr'));
+        rows.forEach(function (row, index) {
+          if (index === 0) {
+            row.classList.add('is-active');
+          }
+
+          var fields = row.querySelectorAll('input, textarea');
+          fields.forEach(function (field) {
+            field.addEventListener('input', function () {
+              if (rowHasContent(row)) {
+                var nextRow = rows[index + 1];
+                if (nextRow) {
+                  nextRow.classList.add('is-active');
+                }
+              } else {
+                for (var i = index + 1; i < rows.length; i += 1) {
+                  rows[i].classList.remove('is-active');
+                  clearRow(rows[i]);
+                }
+              }
+            });
+          });
+        });
+
+        rows.forEach(function (row, index) {
+          if (rowHasContent(row)) {
+            for (var i = 0; i <= index; i += 1) {
+              rows[i].classList.add('is-active');
+            }
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        setupProgressiveTable('defect-table');
+        setupProgressiveTable('rejection-table');
+      });
+    })();
+  </script>
 {% endblock %}
