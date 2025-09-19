@@ -138,20 +138,7 @@
   {% if not is_staff %}
     <div class="page-header">
       <div>
-        <div class="page-header__eyebrow">Operations Control Center</div>
         <h1 class="page-header__title">Welcome back, {{ user.username }}</h1>
-        <p class="page-header__subtitle">
-          Select an operational area to access curated production reports, or switch into analysis
-          mode for executive-level insights.
-        </p>
-      </div>
-      <div class="page-header__actions">
-        {% if analysis_access %}
-          <a class="button button--outline" href="{{ url_for('auth.analysis') }}">Enter Analysis Mode</a>
-        {% endif %}
-        {% if is_admin %}
-          <a class="button" href="{{ url_for('auth.settings') }}">Configure Application</a>
-        {% endif %}
       </div>
     </div>
   {% endif %}
