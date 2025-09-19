@@ -4,210 +4,439 @@
 {% block container_class %}container--fluid{% endblock %}
 {% block styles %}
   {{ super() }}
-  .aoi-view {
-    background: #ffffff;
-    border: 1px solid #d4d6da;
-    padding: 2rem 2.5rem;
-    box-shadow: 0 16px 32px rgba(15, 76, 92, 0.12);
+  :root {
+    --sheet-width: 8.5in;
+    --sheet-height: 11in;
+    --sheet-border: #0f172a;
+    --sheet-muted: #475569;
+    --sheet-label: #111827;
+    --sheet-background: #ffffff;
+    --sheet-line: 1.5px solid var(--sheet-border);
   }
-  .aoi-view header {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-    border-bottom: 2px solid #d4d6da;
-    margin-bottom: 1.75rem;
-    padding-bottom: 1.25rem;
+
+  body.layout-flow {
+    align-items: stretch;
   }
-  .aoi-view h1 {
-    font-size: 1.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0;
-  }
-  .aoi-grid {
-    display: grid;
-    gap: 1.25rem;
-  }
-  .aoi-grid.two-column {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
-  .aoi-grid.three-column {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-  .aoi-field {
-    display: grid;
-    gap: 0.3rem;
-  }
-  .aoi-field span.label {
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
-    color: #6b7789;
-  }
-  .aoi-field span.value {
-    font-size: 1rem;
-  }
-  .aoi-section {
-    margin-bottom: 2rem;
-  }
-  .aoi-section h2 {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  table.aoi-table {
+
+  .aoi-view-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0 2rem;
     width: 100%;
-    border-collapse: collapse;
+    overflow-x: auto;
   }
-  table.aoi-table th,
-  table.aoi-table td {
-    border: 1px solid #d4d6da;
-    padding: 0.6rem;
-    font-size: 0.9rem;
-  }
+
   .aoi-toolbar {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
-    margin-bottom: 1rem;
+    width: min(var(--sheet-width), calc(100% - 2rem));
   }
+
   .aoi-toolbar a {
-    border: 1px solid #0f4c5c;
+    border: 1px solid var(--sheet-border);
     padding: 0.55rem 0.9rem;
     text-transform: uppercase;
     font-size: 0.78rem;
-    letter-spacing: 0.1em;
-  }
-  .aoi-comments {
-    white-space: pre-wrap;
+    letter-spacing: 0.12em;
     background: #f8fafc;
-    border: 1px solid #d4d6da;
-    padding: 1rem;
+    color: var(--sheet-border);
+  }
+
+  .aoi-sheet {
+    width: var(--sheet-width);
+    max-width: calc(100% - 2rem);
+    min-height: var(--sheet-height);
+    background: var(--sheet-background);
+    border: 2px solid var(--sheet-border);
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22);
+    padding: 0.42in 0.46in;
+    display: grid;
+    grid-template-columns: minmax(0, 6.05in) minmax(0, 1.6in);
+    column-gap: 0.3in;
+    color: var(--sheet-label);
+  }
+
+  .sheet-main {
+    display: grid;
+    row-gap: 0.32in;
+  }
+
+  .sheet-header {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in 0.18in;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    column-gap: 0.22in;
+    row-gap: 0.14in;
+    align-items: end;
+  }
+
+  .sheet-title {
+    grid-column: 1 / span 7;
+    font-size: 1.02rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sheet-muted);
+    margin-bottom: 0.05in;
+    font-weight: 600;
+  }
+
+  .field-display {
+    display: block;
+    min-height: 0.34in;
+    border-bottom: var(--sheet-line);
+    padding: 0.04in 0;
+    font-size: 0.84rem;
+    letter-spacing: 0.02em;
+  }
+
+  .field-block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field--form-number {
+    grid-column: 8 / span 2;
+    grid-row: 1;
+  }
+
+  .field--form-rev {
+    grid-column: 10 / span 3;
+    grid-row: 1;
+  }
+
+  .field--date {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+  }
+
+  .field--type {
+    grid-column: 4 / span 6;
+    grid-row: 2;
+  }
+
+  .section {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in;
+    background: var(--sheet-background);
+  }
+
+  .section-title {
+    margin: 0 0 0.16in;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .section-body {
+    display: grid;
+    column-gap: 0.22in;
+    row-gap: 0.2in;
+  }
+
+  .section-body.job {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .section-body.job .field--customer {
+    grid-column: 1 / span 2;
+  }
+
+  .section-body.job .field--assembly {
+    grid-column: 3 / span 2;
+  }
+
+  .section-body.job .field--job-number {
+    grid-column: 1 / span 2;
+  }
+
+  .section-body.job .field--revision {
+    grid-column: 3 / span 1;
+  }
+
+  .section-body.job .field--inspector {
+    grid-column: 4 / span 1;
+  }
+
+  .section-body.job .field--panels {
+    grid-column: 1 / span 1;
+  }
+
+  .section-body.job .field--boards {
+    grid-column: 2 / span 1;
+  }
+
+  .section-body.lot {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aoi-rejection-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+
+  .aoi-rejection-table th,
+  .aoi-rejection-table td {
+    border: var(--sheet-line);
+    padding: 0.14in 0.1in;
+    vertical-align: top;
+  }
+
+  .aoi-rejection-table th {
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .aoi-board-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+
+  .aoi-board-table th,
+  .aoi-board-table td {
+    border: var(--sheet-line);
+    padding: 0.14in 0.1in;
+    vertical-align: top;
+  }
+
+  .aoi-board-table th {
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .aoi-comments-box {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in;
+    min-height: 2.2in;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    background: repeating-linear-gradient(
+      transparent,
+      transparent 0.28in,
+      rgba(15, 23, 42, 0.12) 0.28in,
+      rgba(15, 23, 42, 0.12) 0.29in
+    );
+  }
+
+  .aoi-problem-panel {
+    border: var(--sheet-line);
+    padding: 0.22in 0.2in;
+    background: rgba(248, 250, 252, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 0.18in;
+  }
+
+  .aoi-problem-panel h2 {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .aoi-problem-codes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12in;
+    font-size: 0.68rem;
+  }
+
+  .aoi-problem-codes li {
+    display: flex;
+    gap: 0.18in;
+  }
+
+  .aoi-problem-codes .code {
+    font-weight: 600;
+    letter-spacing: 0.16em;
+  }
+
+  .aoi-problem-codes .description {
+    flex: 1;
   }
 {% endblock %}
 {% block content %}
-  <div class="aoi-view">
+  <div class="aoi-view-wrapper">
     <div class="aoi-toolbar">
       <a class="button button--outline" href="{{ url_for('aoi.print_form', form_id=form.id) }}" target="_blank">Print / PDF</a>
       <a class="button button--outline" href="{{ url_for('aoi.print_form', form_id=form.id, format='pdf') }}" target="_blank">Download PDF</a>
     </div>
-    <header>
-      <div>
-        <h1>AOI Inspection Data Sheet</h1>
-        <div class="aoi-field">
-          <span class="label">Form #</span>
-          <span class="value">{{ form.form_number }}</span>
-        </div>
-        <div class="aoi-field">
-          <span class="label">Form Rev</span>
-          <span class="value">{{ form.form_rev }}</span>
-        </div>
-      </div>
-      <div class="aoi-grid">
-        <div class="aoi-field">
-          <span class="label">Date</span>
-          <span class="value">{{ form.date.strftime('%Y-%m-%d') }}</span>
-        </div>
-        <div class="aoi-field">
-          <span class="label">Type</span>
-          <span class="value">{{ form.type }}</span>
-        </div>
-      </div>
-    </header>
+    <div class="aoi-sheet">
+      <section class="sheet-main">
+        <header class="sheet-header">
+          <h1 class="sheet-title">AOI Inspection Data Sheet</h1>
+          <div class="field-block field--form-number">
+            <span class="field-label">Form #</span>
+            <span class="field-display">{{ form.form_number }}</span>
+          </div>
+          <div class="field-block field--form-rev">
+            <span class="field-label">Form Rev</span>
+            <span class="field-display">{{ form.form_rev }}</span>
+          </div>
+          <div class="field-block field--date">
+            <span class="field-label">Date</span>
+            <span class="field-display">{{ form.date.strftime('%Y-%m-%d') }}</span>
+          </div>
+          <div class="field-block field--type">
+            <span class="field-label">Type</span>
+            <span class="field-display">{{ form.type }}</span>
+          </div>
+        </header>
 
-    <section class="aoi-section">
-      <h2>Job Identifiers</h2>
-      <div class="aoi-grid two-column">
-        <div class="aoi-field"><span class="label">Customer</span><span class="value">{{ form.customer or '\u2014' }}</span></div>
-        <div class="aoi-field"><span class="label">Assembly</span><span class="value">{{ form.assembly or '\u2014' }}</span></div>
-        <div class="aoi-field"><span class="label">Job #</span><span class="value">{{ form.job_number or '\u2014' }}</span></div>
-        <div class="aoi-field"><span class="label">Revision</span><span class="value">{{ form.revision or '\u2014' }}</span></div>
-        <div class="aoi-field"><span class="label"># of Panels</span><span class="value">{{ form.panels_count or 0 }}</span></div>
-        <div class="aoi-field"><span class="label"># of Boards</span><span class="value">{{ form.boards_count or 0 }}</span></div>
-        <div class="aoi-field"><span class="label">Inspector</span><span class="value">{{ form.inspector or '\u2014' }}</span></div>
-      </div>
-    </section>
+        <section class="section section--job">
+          <h2 class="section-title">Job Identifiers</h2>
+          <div class="section-body job">
+            <div class="field-block field--customer">
+              <span class="field-label">Customer</span>
+              <span class="field-display">{{ form.customer or '\u2014' }}</span>
+            </div>
+            <div class="field-block field--assembly">
+              <span class="field-label">Assembly</span>
+              <span class="field-display">{{ form.assembly or '\u2014' }}</span>
+            </div>
+            <div class="field-block field--job-number">
+              <span class="field-label">Job #</span>
+              <span class="field-display">{{ form.job_number or '\u2014' }}</span>
+            </div>
+            <div class="field-block field--revision">
+              <span class="field-label">Revision</span>
+              <span class="field-display">{{ form.revision or '\u2014' }}</span>
+            </div>
+            <div class="field-block field--panels">
+              <span class="field-label"># of Panels</span>
+              <span class="field-display">{{ form.panels_count or 0 }}</span>
+            </div>
+            <div class="field-block field--boards">
+              <span class="field-label"># of Boards</span>
+              <span class="field-display">{{ form.boards_count or 0 }}</span>
+            </div>
+            <div class="field-block field--inspector">
+              <span class="field-label">Inspector</span>
+              <span class="field-display">{{ form.inspector or '\u2014' }}</span>
+            </div>
+          </div>
+        </section>
 
-    <section class="aoi-section">
-      <h2>Lot Inspection Result</h2>
-      <div class="aoi-grid three-column">
-        <div class="aoi-field"><span class="label">Quantity Inspected</span><span class="value">{{ form.qty_inspected }}</span></div>
-        <div class="aoi-field"><span class="label">Quantity Rejected</span><span class="value">{{ form.qty_rejected }}</span></div>
-        <div class="aoi-field"><span class="label">Quantity Accepted</span><span class="value">{{ form.qty_accepted }}</span></div>
-      </div>
-    </section>
+        <section class="section section--lot">
+          <h2 class="section-title">Lot Inspection Result</h2>
+          <div class="section-body lot">
+            <div class="field-block">
+              <span class="field-label">Quantity Inspected</span>
+              <span class="field-display">{{ form.qty_inspected }}</span>
+            </div>
+            <div class="field-block">
+              <span class="field-label">Quantity Rejected</span>
+              <span class="field-display">{{ form.qty_rejected }}</span>
+            </div>
+            <div class="field-block">
+              <span class="field-label">Quantity Accepted</span>
+              <span class="field-display">{{ form.qty_accepted }}</span>
+            </div>
+          </div>
+        </section>
 
-    <section class="aoi-section">
-      <h2>Reason for Rejection</h2>
-      <table class="aoi-table">
-        <thead>
-          <tr>
-            <th scope="col">Quantity</th>
-            <th scope="col">Problem Code</th>
-            <th scope="col">Defective Problem</th>
-            <th scope="col">Reference Designator(s)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for rejection in form.rejections %}
-            <tr>
-              <td>{{ rejection.quantity }}</td>
-              <td>{{ rejection.problem_code }}</td>
-              <td>
-                {% if rejection.problem %}
-                  {{ rejection.problem.name }}{% if rejection.problem.part_type %} · {{ rejection.problem.part_type }}{% endif %}
-                {% else %}
-                  \u2014
-                {% endif %}
-              </td>
-              <td>{{ rejection.reference_designators or '\u2014' }}</td>
-            </tr>
-          {% else %}
-            <tr>
-              <td colspan="4">No rejections recorded.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
-
-    {% if form.board_data %}
-      <section class="aoi-section">
-        <h2>Board Data</h2>
-        <table class="aoi-table">
-          <thead>
-            <tr>
-              <th scope="col">Board ID / Serial</th>
-              <th scope="col">Reference Designator(s)</th>
-              <th scope="col">Problem Code</th>
-              <th scope="col">Comments</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for board in form.board_data %}
+        <section class="section section--rejections">
+          <h2 class="section-title">Reason for Rejection</h2>
+          <table class="aoi-rejection-table">
+            <thead>
               <tr>
-                <td>{{ board.board_id or '\u2014' }}</td>
-                <td>{{ board.reference_designators or '\u2014' }}</td>
-                <td>
-                  {{ board.problem_code }}
-                  {% if board.problem %}
-                    — {{ board.problem.name }}{% if board.problem.part_type %} · {{ board.problem.part_type }}{% endif %}
-                  {% endif %}
-                </td>
-                <td>{{ board.comments or '\u2014' }}</td>
+                <th scope="col">Quantity</th>
+                <th scope="col">Problem Code</th>
+                <th scope="col">Defective Problem</th>
+                <th scope="col">Reference Designator(s)</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </section>
-    {% endif %}
+            </thead>
+            <tbody>
+              {% for rejection in form.rejections %}
+                <tr>
+                  <td>{{ rejection.quantity }}</td>
+                  <td>{{ rejection.problem_code }}</td>
+                  <td>
+                    {% if rejection.problem %}
+                      {{ rejection.problem.name }}{% if rejection.problem.part_type %} · {{ rejection.problem.part_type }}{% endif %}
+                    {% else %}
+                      \u2014
+                    {% endif %}
+                  </td>
+                  <td>{{ rejection.reference_designators or '\u2014' }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4">No rejections recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
 
-    {% if form.comments %}
-      <section class="aoi-section">
-        <h2>Comments</h2>
-        <div class="aoi-comments">{{ form.comments }}</div>
+        {% if form.board_data %}
+          <section class="section section--boards">
+            <h2 class="section-title">Board Data</h2>
+            <table class="aoi-board-table">
+              <thead>
+                <tr>
+                  <th scope="col">Board ID / Serial</th>
+                  <th scope="col">Reference Designator(s)</th>
+                  <th scope="col">Problem Code</th>
+                  <th scope="col">Comments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for board in form.board_data %}
+                  <tr>
+                    <td>{{ board.board_id or '\u2014' }}</td>
+                    <td>{{ board.reference_designators or '\u2014' }}</td>
+                    <td>
+                      {{ board.problem_code }}
+                      {% if board.problem %}
+                        — {{ board.problem.name }}{% if board.problem.part_type %} · {{ board.problem.part_type }}{% endif %}
+                      {% endif %}
+                    </td>
+                    <td>{{ board.comments or '\u2014' }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </section>
+        {% endif %}
+
+        <section class="section section--comments">
+          <h2 class="section-title">Comments</h2>
+          <div class="aoi-comments-box">{{ form.comments or '' }}</div>
+        </section>
       </section>
-    {% endif %}
+
+      <aside class="aoi-problem-panel" aria-label="Problem Codes Reference">
+        <h2>Problem Codes</h2>
+        <ul class="aoi-problem-codes">
+          {% for entry in problem_codes %}
+            <li>
+              <span class="code">{{ entry.code }}</span>
+              <span class="description">{{ entry.name }}{% if entry.part_type %} · {{ entry.part_type }}{% endif %}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+    </div>
   </div>
 {% endblock %}

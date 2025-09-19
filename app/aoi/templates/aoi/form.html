@@ -5,227 +5,432 @@
 {% block styles %}
   {{ super() }}
   :root {
-    --aoi-border: #cdd5df;
-    --aoi-background: #f5f7fa;
-    --aoi-heading: #1f2933;
-    --aoi-accent: #123b5d;
-    --aoi-muted: #6b7789;
-    --aoi-grid-gap: 1rem;
+    --sheet-width: 8.5in;
+    --sheet-height: 11in;
+    --sheet-border: #0f172a;
+    --sheet-muted: #475569;
+    --sheet-label: #111827;
+    --sheet-accent: #1d4ed8;
+    --sheet-background: #ffffff;
+    --sheet-line: 1.5px solid var(--sheet-border);
+  }
+
+  body.layout-flow {
+    align-items: stretch;
   }
 
   .aoi-wrapper {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 260px;
-    gap: 1.5rem;
-    align-items: start;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0 2rem;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #aoi-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
   }
 
   .aoi-sheet {
-    background: #ffffff;
-    border: 1px solid var(--aoi-border);
-    padding: 2rem 2.5rem;
-    box-shadow: 0 16px 32px rgba(15, 76, 92, 0.12);
-  }
-
-  .aoi-header {
+    width: var(--sheet-width);
+    max-width: calc(100% - 2rem);
+    min-height: var(--sheet-height);
+    background: var(--sheet-background);
+    border: 2px solid var(--sheet-border);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.25);
+    padding: 0.42in 0.46in;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
-    border-bottom: 2px solid var(--aoi-border);
-    padding-bottom: 1.5rem;
-    margin-bottom: 1.75rem;
+    grid-template-columns: minmax(0, 6.05in) minmax(0, 1.6in);
+    column-gap: 0.3in;
+    color: var(--sheet-label);
   }
 
-  .aoi-header__block {
+  .sheet-main {
     display: grid;
-    gap: 0.65rem;
+    row-gap: 0.32in;
   }
 
-  .aoi-header__title {
-    font-size: 1.75rem;
-    letter-spacing: 0.08em;
+  .sheet-header {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in 0.18in;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    column-gap: 0.22in;
+    row-gap: 0.14in;
+    align-items: end;
+  }
+
+  .sheet-title {
+    grid-column: 1 / span 7;
+    font-size: 1.02rem;
     text-transform: uppercase;
+    letter-spacing: 0.24em;
     margin: 0;
-    color: var(--aoi-heading);
   }
 
-  .aoi-field-group {
-    display: grid;
-    gap: 0.35rem;
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05in;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sheet-muted);
   }
 
-  .aoi-field-group label {
-    font-size: 0.78rem;
+  .field label,
+  .field legend {
+    font-weight: 600;
+  }
+
+  .field .field-static,
+  .field .field-control {
+    font-family: inherit;
+    font-size: 0.84rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--sheet-label);
+    padding: 0.04in 0;
+    border: none;
+    border-bottom: var(--sheet-line);
+    background: transparent;
+  }
+
+  .field .field-static {
+    min-height: 0.34in;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .field .field-control:focus,
+  .field .field-control:focus-visible {
+    outline: 2px solid rgba(29, 78, 216, 0.45);
+    outline-offset: 2px;
+  }
+
+  .field select.field-control {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--sheet-border) 50%),
+      linear-gradient(135deg, var(--sheet-border) 50%, transparent 50%);
+    background-position: calc(100% - 12px) calc(50% - 3px), calc(100% - 7px) calc(50% - 3px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 1.4rem;
+  }
+
+  .field input[type="number"].field-control {
+    -moz-appearance: textfield;
+  }
+
+  .field input[type="number"].field-control::-webkit-outer-spin-button,
+  .field input[type="number"].field-control::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  .field--form-number {
+    grid-column: 8 / span 2;
+    grid-row: 1;
+  }
+
+  .field--form-rev {
+    grid-column: 10 / span 3;
+    grid-row: 1;
+  }
+
+  .field--date {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+  }
+
+  fieldset.field.field--type {
+    grid-column: 4 / span 6;
+    grid-row: 2;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .field--type legend {
+    padding: 0;
+  }
+
+  .field--type .options {
+    display: inline-flex;
+    gap: 0.4in;
+    font-size: 0.8rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--aoi-muted);
+    color: var(--sheet-label);
   }
 
-  .aoi-field-group input,
-  .aoi-field-group select,
-  .aoi-field-group textarea {
-    border: 1px solid var(--aoi-border);
-    padding: 0.65rem 0.75rem;
-    font-size: 0.95rem;
-  }
-
-  .aoi-field-group input[readonly] {
-    background: #f0f4f8;
-    color: #364152;
-  }
-
-  .aoi-radio-group {
+  .field--type .options label {
     display: inline-flex;
-    gap: 1rem;
     align-items: center;
-    font-size: 0.95rem;
+    gap: 0.12in;
+    font-weight: 500;
   }
 
-  .aoi-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--aoi-grid-gap);
-    margin-bottom: 1.75rem;
+  .field--type input[type="radio"] {
+    width: 0.22in;
+    height: 0.22in;
   }
 
-  .aoi-meta__section {
-    display: grid;
-    gap: 0.75rem;
+  .section {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in;
+    background: var(--sheet-background);
   }
 
-  .aoi-meta__title {
-    font-size: 0.85rem;
-    letter-spacing: 0.18em;
+  .section-title {
+    margin: 0 0 0.16in;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--aoi-muted);
-    margin: 0;
   }
 
-  .aoi-job-grid {
+  .section-body {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--aoi-grid-gap);
+    column-gap: 0.22in;
+    row-gap: 0.2in;
   }
 
-  .aoi-lot-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: var(--aoi-grid-gap);
+  .section-body.job {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .aoi-summary-box {
-    border: 1px solid var(--aoi-border);
-    background: var(--aoi-background);
-    padding: 1rem;
-    display: grid;
-    gap: 0.85rem;
+  .section-body.job .field--customer {
+    grid-column: 1 / span 2;
   }
 
-  .aoi-summary-box h3 {
-    font-size: 0.92rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin: 0;
+  .section-body.job .field--assembly {
+    grid-column: 3 / span 2;
+  }
+
+  .section-body.job .field--job-number {
+    grid-column: 1 / span 2;
+  }
+
+  .section-body.job .field--revision {
+    grid-column: 3 / span 1;
+  }
+
+  .section-body.job .field--inspector {
+    grid-column: 4 / span 1;
+  }
+
+  .section-body.job .field--panels {
+    grid-column: 1 / span 1;
+  }
+
+  .section-body.job .field--boards {
+    grid-column: 2 / span 1;
+  }
+
+  .section-body.lot {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lot-feedback {
+    margin-top: 0.1in;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: #b91c1c;
+    min-height: 0.3in;
+  }
+
+  .rejection-feedback {
+    margin-top: 0.18in;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--sheet-muted);
+    min-height: 0.3in;
   }
 
   .aoi-rejection-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0.75rem;
+    font-size: 0.78rem;
   }
 
-  .aoi-rejection-table thead {
-    background: #eff3f8;
+  .aoi-rejection-table thead th {
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
   }
 
   .aoi-rejection-table th,
   .aoi-rejection-table td {
-    border: 1px solid var(--aoi-border);
-    padding: 0.5rem;
-    font-size: 0.9rem;
+    border: var(--sheet-line);
+    padding: 0.14in 0.1in;
     vertical-align: top;
   }
 
-  .aoi-rejection-table select,
-  .aoi-rejection-table input {
+  .aoi-rejection-table input,
+  .aoi-rejection-table select {
     width: 100%;
-    border: 1px solid var(--aoi-border);
-    padding: 0.45rem 0.5rem;
+    border: none;
+    border-bottom: 1px solid var(--sheet-border);
+    background: transparent;
+    font-size: 0.78rem;
+    font-family: inherit;
+    padding: 0.02in 0;
+  }
+
+  .aoi-rejection-table input:focus,
+  .aoi-rejection-table select:focus {
+    outline: 2px solid rgba(29, 78, 216, 0.45);
+    outline-offset: 2px;
   }
 
   .aoi-rejection-table__actions {
     display: flex;
-    gap: 0.5rem;
+    justify-content: center;
   }
 
-  .aoi-add-row,
-  .aoi-delete-row {
+  .aoi-rejection-table__actions .aoi-delete-row {
     border: none;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
+    background: rgba(15, 23, 42, 0.08);
+    padding: 0.1in 0.18in;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.62rem;
+    cursor: pointer;
+  }
+
+  .aoi-table-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.18in;
+    margin-top: 0.18in;
+  }
+
+  .aoi-table-footer button {
+    border: none;
+    background: var(--sheet-border);
+    color: #ffffff;
+    padding: 0.12in 0.26in;
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
-    background: #dbe7f3;
-    color: var(--aoi-accent);
   }
 
-  .aoi-delete-row {
-    background: #f3d8db;
-    color: #8a1c26;
+  details.aoi-board-details {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in;
+    background: rgba(241, 245, 249, 0.35);
+  }
+
+  details.aoi-board-details[open] {
+    background: rgba(241, 245, 249, 0.65);
+  }
+
+  details.aoi-board-details summary {
+    cursor: pointer;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.18in;
+  }
+
+  .aoi-board-grid {
+    display: grid;
+    gap: 0.2in;
+  }
+
+  .aoi-board-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    gap: 0.2in;
+    align-items: end;
+  }
+
+  .aoi-board-row .field {
+    gap: 0.04in;
+  }
+
+  .aoi-comments {
+    border: var(--sheet-line);
+    padding: 0.22in 0.26in;
+  }
+
+  .aoi-comments textarea {
+    width: 100%;
+    min-height: 2.2in;
+    border: none;
+    background: repeating-linear-gradient(
+      transparent,
+      transparent 0.28in,
+      rgba(15, 23, 42, 0.12) 0.28in,
+      rgba(15, 23, 42, 0.12) 0.29in
+    );
+    padding: 0.08in;
+    font-size: 0.85rem;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+
+  .aoi-comments textarea:focus {
+    outline: 2px solid rgba(29, 78, 216, 0.45);
+    outline-offset: 2px;
   }
 
   .aoi-problem-panel {
-    border: 1px solid var(--aoi-border);
-    background: #ffffff;
-    padding: 1.25rem;
-    position: sticky;
-    top: 1.5rem;
-    display: grid;
-    gap: 0.85rem;
+    border: var(--sheet-line);
+    padding: 0.22in 0.2in;
+    background: rgba(248, 250, 252, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 0.18in;
   }
 
   .aoi-problem-panel h2 {
-    font-size: 1rem;
     margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+  }
+
+  .aoi-problem-codes__label {
+    font-weight: 400;
+    letter-spacing: 0.08em;
   }
 
   .aoi-problem-codes {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 0.4rem;
-    max-height: 70vh;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12in;
+    font-size: 0.68rem;
   }
 
   .aoi-problem-codes button {
-    width: 100%;
-    text-align: left;
-    padding: 0.45rem 0.5rem;
-    border: 1px solid transparent;
+    border: none;
     background: transparent;
+    text-align: left;
+    padding: 0.06in 0.04in;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
   }
 
   .aoi-problem-codes button:hover,
   .aoi-problem-codes button:focus {
-    border-color: var(--aoi-accent);
-    background: rgba(18, 59, 93, 0.08);
+    background: rgba(29, 78, 216, 0.12);
+    outline: none;
   }
 
-  .aoi-problem-codes__label {
-    margin-left: 0.35rem;
-    font-weight: 400;
-  }
-
-  .aoi-comments textarea {
-    min-height: 120px;
+  .aoi-problem-codes strong {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
   }
 
   .aoi-footer-actions {
@@ -233,164 +438,119 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.75rem;
-    margin-top: 2rem;
+    width: min(var(--sheet-width), calc(100% - 2rem));
   }
 
   .aoi-footer-actions button {
     padding: 0.75rem 1.4rem;
     border: none;
-    background: var(--aoi-accent);
+    background: var(--sheet-border);
     color: #ffffff;
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
+    font-size: 0.86rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
   }
 
   .aoi-footer-actions button[data-action="draft"] {
-    background: #6b7789;
+    background: #475569;
   }
 
   .aoi-footer-actions button[data-action="print"] {
-    background: #1f6f8b;
+    background: #1e3a8a;
   }
 
   .aoi-inline-feedback {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: #0f5132;
+    width: min(var(--sheet-width), calc(100% - 2rem));
+    font-size: 0.82rem;
+    color: #14532d;
+    min-height: 1.2rem;
   }
 
-  details.aoi-board-details {
-    border: 1px solid var(--aoi-border);
-    padding: 1rem;
-    background: #f8fbff;
-  }
-
-  details.aoi-board-details summary {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    cursor: pointer;
-    margin-bottom: 0.75rem;
-  }
-
-  .aoi-board-grid {
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .aoi-board-grid .aoi-board-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
-    align-items: end;
-  }
-
-  .aoi-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    border: 1px solid var(--aoi-border);
-    padding: 0.25rem 0.45rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--aoi-muted);
-  }
-
-  .aoi-table-footer {
-    margin-top: 0.75rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-  }
-
-  .aoi-table-footer button {
-    border: none;
-    padding: 0.4rem 0.6rem;
-    background: #dbeafe;
-    color: var(--aoi-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    font-size: 0.75rem;
-  }
-
-  @media (max-width: 1080px) {
-    .aoi-wrapper {
-      grid-template-columns: 1fr;
+  @media (max-width: 1100px) {
+    .aoi-sheet {
+      transform: scale(0.9);
+      transform-origin: top center;
     }
 
-    .aoi-problem-panel {
-      position: static;
+    .aoi-footer-actions,
+    .aoi-inline-feedback {
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .aoi-sheet {
+      transform: scale(0.8);
+    }
+
+    .aoi-footer-actions,
+    .aoi-inline-feedback {
+      transform: scale(0.8);
     }
   }
 {% endblock %}
 {% block content %}
   <div class="aoi-wrapper" data-problem-codes='{{ problem_codes|tojson }}'>
-    <div class="aoi-sheet">
-      <form id="aoi-form" novalidate>
-        <input type="hidden" name="form_number" value="Form-114" />
-        <input type="hidden" name="form_rev" value="Rev. 17 (9/9/2025)" />
-        <div class="aoi-header">
-          <div class="aoi-header__block">
-            <h1 class="aoi-header__title">AOI Inspection Data Sheet</h1>
-            <div class="aoi-field-group">
-              <label for="aoi-date">Date</label>
-              <input id="aoi-date" name="date" type="date" value="{{ today.isoformat() }}" required />
-            </div>
-            <div class="aoi-field-group">
+    <form id="aoi-form" novalidate>
+      <input type="hidden" name="form_number" value="Form-114" />
+      <input type="hidden" name="form_rev" value="Rev. 17 (9/9/2025)" />
+      <div class="aoi-sheet">
+        <section class="sheet-main">
+          <header class="sheet-header">
+            <h1 class="sheet-title">AOI Inspection Data Sheet</h1>
+            <div class="field field--form-number">
               <label>Form #</label>
-              <div class="aoi-tag">Form-114</div>
+              <div class="field-static">Form-114</div>
             </div>
-          </div>
-          <div class="aoi-header__block">
-            <div class="aoi-field-group">
-              <label>Type</label>
-              <div class="aoi-radio-group">
+            <div class="field field--form-rev">
+              <label>Form Rev</label>
+              <div class="field-static">Rev. 17 (9/9/2025)</div>
+            </div>
+            <div class="field field--date">
+              <label for="aoi-date">Date</label>
+              <input id="aoi-date" name="date" type="date" class="field-control" value="{{ today.isoformat() }}" required />
+            </div>
+            <fieldset class="field field--type">
+              <legend>Type</legend>
+              <div class="options">
                 <label><input type="radio" name="type" value="SMT" required /> SMT</label>
                 <label><input type="radio" name="type" value="TH" /> TH</label>
               </div>
-            </div>
-            <div class="aoi-field-group">
-              <label>Form Rev</label>
-              <div class="aoi-tag">Rev. 17 (9/9/2025)</div>
-            </div>
-          </div>
-        </div>
+            </fieldset>
+          </header>
 
-        <div class="aoi-meta">
-          <div class="aoi-meta__section">
-            <h2 class="aoi-meta__title">Job Identifiers</h2>
-            <div class="aoi-job-grid">
-              <div class="aoi-field-group">
+          <section class="section section--job">
+            <h2 class="section-title">Job Identifiers</h2>
+            <div class="section-body job">
+              <div class="field field--customer">
                 <label for="job-customer">Customer</label>
-                <input id="job-customer" name="customer" type="text" />
+                <input id="job-customer" name="customer" type="text" class="field-control" />
               </div>
-              <div class="aoi-field-group">
+              <div class="field field--assembly">
                 <label for="job-assembly">Assembly</label>
-                <input id="job-assembly" name="assembly" type="text" />
+                <input id="job-assembly" name="assembly" type="text" class="field-control" />
               </div>
-              <div class="aoi-field-group">
+              <div class="field field--job-number">
                 <label for="job-number">Job #</label>
-                <input id="job-number" name="job_number" type="text" />
+                <input id="job-number" name="job_number" type="text" class="field-control" />
               </div>
-              <div class="aoi-field-group">
-                <label for="job-revision">Rev</label>
-                <input id="job-revision" name="revision" type="text" />
+              <div class="field field--revision">
+                <label for="job-revision">Revision</label>
+                <input id="job-revision" name="revision" type="text" class="field-control" />
               </div>
-              <div class="aoi-field-group">
+              <div class="field field--panels">
                 <label for="job-panels"># of Panels</label>
-                <input id="job-panels" name="panels_count" type="number" min="0" value="0" />
+                <input id="job-panels" name="panels_count" type="number" min="0" value="0" class="field-control" />
               </div>
-              <div class="aoi-field-group">
+              <div class="field field--boards">
                 <label for="job-boards"># of Boards</label>
-                <input id="job-boards" name="boards_count" type="number" min="0" value="0" />
+                <input id="job-boards" name="boards_count" type="number" min="0" value="0" class="field-control" />
               </div>
-              <div class="aoi-field-group">
+              <div class="field field--inspector">
                 <label for="job-inspector">Inspector</label>
-                <select id="job-inspector" name="inspector">
+                <select id="job-inspector" name="inspector" class="field-control">
                   <option value="">Select inspector</option>
                   {% for inspector in inspectors %}
                     <option value="{{ inspector }}">{{ inspector }}</option>
@@ -398,32 +558,29 @@
                 </select>
               </div>
             </div>
-          </div>
-          <div class="aoi-meta__section">
-            <h2 class="aoi-meta__title">Lot Inspection Result</h2>
-            <div class="aoi-summary-box">
-              <div class="aoi-lot-grid">
-                <div class="aoi-field-group">
-                  <label for="lot-inspected">Quantity Inspected</label>
-                  <input id="lot-inspected" name="qty_inspected" type="number" min="0" value="0" />
-                </div>
-                <div class="aoi-field-group">
-                  <label for="lot-rejected">Quantity Rejected</label>
-                  <input id="lot-rejected" name="qty_rejected" type="number" min="0" value="0" />
-                </div>
-                <div class="aoi-field-group">
-                  <label for="lot-accepted">Quantity Accepted</label>
-                  <input id="lot-accepted" name="qty_accepted" type="number" readonly value="0" />
-                </div>
-              </div>
-              <p class="aoi-inline-feedback" id="lot-feedback" role="status"></p>
-            </div>
-          </div>
-        </div>
+          </section>
 
-        <section class="aoi-rejections">
-          <div class="aoi-meta__section">
-            <h2 class="aoi-meta__title">Reason For Rejection</h2>
+          <section class="section section--lot">
+            <h2 class="section-title">Lot Inspection Result</h2>
+            <div class="section-body lot">
+              <div class="field">
+                <label for="lot-inspected">Quantity Inspected</label>
+                <input id="lot-inspected" name="qty_inspected" type="number" min="0" value="0" class="field-control" />
+              </div>
+              <div class="field">
+                <label for="lot-rejected">Quantity Rejected</label>
+                <input id="lot-rejected" name="qty_rejected" type="number" min="0" value="0" class="field-control" />
+              </div>
+              <div class="field">
+                <label for="lot-accepted">Quantity Accepted</label>
+                <input id="lot-accepted" name="qty_accepted" type="number" readonly value="0" class="field-control" />
+              </div>
+            </div>
+            <p class="lot-feedback" id="lot-feedback" role="status"></p>
+          </section>
+
+          <section class="section section--rejections">
+            <h2 class="section-title">Reason for Rejection</h2>
             <table class="aoi-rejection-table" aria-describedby="rejection-help">
               <thead>
                 <tr>
@@ -439,50 +596,51 @@
             <div class="aoi-table-footer">
               <button type="button" id="add-rejection">Add Row</button>
             </div>
-            <p id="rejection-help" class="aoi-inline-feedback" aria-live="polite"></p>
-          </div>
+            <p id="rejection-help" class="rejection-feedback" aria-live="polite"></p>
+          </section>
+
+          <details class="aoi-board-details">
+            <summary>Board Data (optional detail)</summary>
+            <div class="aoi-board-grid" id="board-rows"></div>
+            <div class="aoi-table-footer">
+              <button type="button" id="add-board">Add Board Entry</button>
+            </div>
+          </details>
+
+          <section class="aoi-comments">
+            <div class="field">
+              <label for="aoi-comments">Comments</label>
+              <textarea id="aoi-comments" name="comments"></textarea>
+            </div>
+          </section>
         </section>
 
-        <details class="aoi-board-details">
-          <summary>Board Data (optional detail)</summary>
-          <div class="aoi-board-grid" id="board-rows"></div>
-          <div class="aoi-table-footer">
-            <button type="button" id="add-board">Add Board Entry</button>
-          </div>
-        </details>
+        <aside class="aoi-problem-panel" aria-label="Problem Codes Reference">
+          <h2>Problem Codes</h2>
+          <ul class="aoi-problem-codes">
+            {% for entry in problem_codes %}
+              <li>
+                <button
+                  type="button"
+                  data-problem-code="{{ entry.code }}"
+                  title="{{ entry.name }}{% if entry.part_type %} • {{ entry.part_type }}{% endif %}"
+                >
+                  <strong>{{ entry.code }}</strong>
+                  <span class="aoi-problem-codes__label">— {{ entry.name }}{% if entry.part_type %} · {{ entry.part_type }}{% endif %}</span>
+                </button>
+              </li>
+            {% endfor %}
+          </ul>
+        </aside>
+      </div>
 
-        <div class="aoi-comments">
-          <div class="aoi-field-group">
-            <label for="aoi-comments">Comments</label>
-            <textarea id="aoi-comments" name="comments"></textarea>
-          </div>
-        </div>
-
-        <div class="aoi-footer-actions">
-          <button type="button" data-action="draft">Save Draft</button>
-          <button type="button" data-action="submit">Submit</button>
-          <button type="button" data-action="print" disabled>Print / Export PDF</button>
-        </div>
-        <div class="aoi-inline-feedback" id="form-feedback" aria-live="polite"></div>
-      </form>
-    </div>
-    <aside class="aoi-problem-panel" aria-label="Problem Codes Reference">
-      <h2>Problem Codes</h2>
-      <ul class="aoi-problem-codes">
-        {% for entry in problem_codes %}
-          <li>
-            <button
-              type="button"
-              data-problem-code="{{ entry.code }}"
-              title="{{ entry.name }}{% if entry.part_type %} • {{ entry.part_type }}{% endif %}"
-            >
-              <strong>{{ entry.code }}</strong>
-              <span class="aoi-problem-codes__label">— {{ entry.name }}{% if entry.part_type %} · {{ entry.part_type }}{% endif %}</span>
-            </button>
-          </li>
-        {% endfor %}
-      </ul>
-    </aside>
+      <div class="aoi-footer-actions">
+        <button type="button" data-action="draft">Save Draft</button>
+        <button type="button" data-action="submit">Submit</button>
+        <button type="button" data-action="print" disabled>Print / Export PDF</button>
+      </div>
+      <div class="aoi-inline-feedback" id="form-feedback" aria-live="polite"></div>
+    </form>
   </div>
 
   <template id="rejection-row-template">
@@ -515,17 +673,17 @@
 
   <template id="board-row-template">
     <div class="aoi-board-row">
-      <div class="aoi-field-group">
+      <div class="field">
         <label>Board ID / Serial</label>
-        <input type="text" class="aoi-board-id" />
+        <input type="text" class="aoi-board-id field-control" />
       </div>
-      <div class="aoi-field-group">
+      <div class="field">
         <label>Reference Designator(s)</label>
-        <input type="text" class="aoi-board-refdes" />
+        <input type="text" class="aoi-board-refdes field-control" />
       </div>
-      <div class="aoi-field-group">
+      <div class="field">
         <label>Problem Code</label>
-        <select class="aoi-board-code">
+        <select class="aoi-board-code field-control">
           <option value="" title="Select a problem code">Select</option>
           {% for entry in problem_codes %}
             <option
@@ -537,9 +695,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="aoi-field-group">
+      <div class="field">
         <label>Comments</label>
-        <input type="text" class="aoi-board-comments" />
+        <input type="text" class="aoi-board-comments field-control" />
       </div>
       <div class="aoi-rejection-table__actions">
         <button type="button" class="aoi-delete-row">Delete</button>
@@ -642,28 +800,25 @@
       const template = document.getElementById('board-row-template');
       const fragment = template.content.cloneNode(true);
       const row = fragment.querySelector('.aoi-board-row');
+      const deleteButton = row.querySelector('.aoi-delete-row');
+
       row.querySelectorAll('input, select').forEach((input) => {
         input.addEventListener('input', markDirty);
         input.addEventListener('change', markDirty);
       });
-      const boardCodeSelect = row.querySelector('.aoi-board-code');
-      if (boardCodeSelect) {
-        boardCodeSelect.addEventListener('change', () => {
-          boardCodeSelect.title = formatProblemDetails(boardCodeSelect.value);
-        });
-        boardCodeSelect.title = formatProblemDetails(boardCodeSelect.value);
-      }
-      row.querySelector('.aoi-delete-row').addEventListener('click', () => {
+
+      deleteButton.addEventListener('click', () => {
         row.remove();
         markDirty();
       });
+
       boardContainer.appendChild(row);
       return row;
     }
 
     function collectRejections() {
       return Array.from(rejectionBody.querySelectorAll('tr')).map((row) => ({
-        quantity: row.querySelector('.aoi-rejection-quantity').value,
+        quantity: Number(row.querySelector('.aoi-rejection-quantity').value || 0),
         problem_code: row.querySelector('.aoi-rejection-code').value,
         reference_designators: row.querySelector('.aoi-rejection-refdes').value,
       }));
