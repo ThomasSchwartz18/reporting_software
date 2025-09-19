@@ -91,6 +91,21 @@ class EmployeeSubmission(db.Model):
     submitted_at: datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
+@dataclass
+class SessionEvent(db.Model):
+    """Audit trail of user interactions within a signed-in session."""
+
+    id: int = db.Column(db.Integer, primary_key=True)
+    session_id: str = db.Column(db.String(64), nullable=False, index=True)
+    user_id: int | None = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    username: str | None = db.Column(db.String(64), nullable=True)
+    event_type: str = db.Column(db.String(64), nullable=False, index=True)
+    context_value: str | None = db.Column(db.String(128), nullable=True, index=True)
+    event_details: str | None = db.Column(db.Text, nullable=True)
+    path: str | None = db.Column(db.String(255), nullable=True)
+    created_at: datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+
+
 DEFAULT_USERS: tuple[dict[str, str | Role], ...] = (
     {"username": "2276", "password": "2278!", "role": Role.MANAGER},
     {"username": "Schwartz", "password": "2276", "role": Role.ADMIN},
