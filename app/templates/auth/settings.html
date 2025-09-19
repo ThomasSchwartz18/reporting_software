@@ -6,13 +6,65 @@
 
 {% block styles %}
   <style>
-    .settings-grid {
+    .settings-shell {
       display: flex;
       flex-direction: column;
-      gap: 1.75rem;
+      gap: 1.5rem;
     }
 
-    .settings-grid .card {
+    .settings-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: rgba(15, 76, 92, 0.06);
+      border: 1px solid rgba(15, 76, 92, 0.12);
+      padding: 0.35rem;
+    }
+
+    .settings-tab {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      padding: 0.65rem 1.15rem;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .settings-tab.is-active {
+      background: #ffffff;
+      border: 1px solid rgba(15, 76, 92, 0.18);
+      color: var(--text-primary);
+      box-shadow: 0 6px 12px rgba(15, 76, 92, 0.08);
+    }
+
+    .settings-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .settings-panels.has-tabs .settings-panel {
+      display: none;
+    }
+
+    .settings-panels.has-tabs .settings-panel.is-active {
+      display: block;
+    }
+
+    .settings-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .settings-panel .card-grid {
+      gap: 1.5rem;
+    }
+
+    .settings-panel .card {
       position: relative;
     }
 
@@ -57,6 +109,29 @@
     .settings-card__actions {
       display: flex;
       justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    .leadership-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .pill {
+      background: rgba(15, 76, 92, 0.08);
+      border: 1px solid rgba(15, 76, 92, 0.16);
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+    }
+
+    .empty-state {
+      padding: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
     .user-directory {
@@ -70,6 +145,7 @@
       gap: 1rem;
       padding: 1.25rem 0;
       border-bottom: 1px solid rgba(15, 76, 92, 0.08);
+      align-items: end;
     }
 
     .user-entry:last-child {
@@ -94,26 +170,22 @@
       color: var(--muted);
     }
 
-    .leadership-pills {
+    .user-entry__actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-top: 1rem;
+      justify-content: flex-end;
+      gap: 0.75rem;
     }
 
-    .pill {
-      background: rgba(15, 76, 92, 0.08);
-      border: 1px solid rgba(15, 76, 92, 0.16);
-      padding: 0.5rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      letter-spacing: 0.04em;
+    .button--ghost.button--danger {
+      border-color: rgba(190, 60, 60, 0.45);
+      color: #b91c1c;
     }
 
-    .empty-state {
-      padding: 1rem 0 0;
-      color: var(--muted);
-      font-size: 0.9rem;
+    .button--ghost.button--danger:hover,
+    .button--ghost.button--danger:focus {
+      background: rgba(185, 28, 28, 0.08);
+      color: #991b1b;
     }
 
     .card small {
@@ -143,174 +215,239 @@
     </div>
   </div>
 
-  <div class="settings-grid">
-    <div class="card-grid two-column">
-      <section class="card card--highlight">
-        <h2>General Configuration</h2>
-        <p class="settings-card__meta">Branding &amp; presentation</p>
-        <form method="post" class="form-grid">
-          <input type="hidden" name="action" value="update_general">
-          <div class="field">
-            <label for="application_name">Application Name</label>
-            <input
-              id="application_name"
-              name="application_name"
-              type="text"
-              value="{{ settings_values.application_name }}"
-              placeholder="Executive Reporting Suite"
-            >
-          </div>
-          <div class="field">
-            <label for="tagline">Tagline</label>
-            <input
-              id="tagline"
-              name="tagline"
-              type="text"
-              value="{{ settings_values.tagline }}"
-              placeholder="High-trust insights for leadership"
-            >
-          </div>
-          <div class="settings-card__actions">
-            <button type="submit" class="button button--sm">Save General Settings</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>Data Connections</h2>
-        <p class="settings-card__meta">Source of truth</p>
-        <form method="post" class="form-grid">
-          <input type="hidden" name="action" value="update_database">
-          <div class="field">
-            <label for="data_source">Primary Data Source</label>
-            <input
-              id="data_source"
-              name="data_source"
-              type="text"
-              value="{{ settings_values.data_source }}"
-              placeholder="Example: postgresql://user:password@host:5432/reporting"
-            >
-          </div>
-          <div class="field">
-            <label for="warehouse_connection">Data Warehouse Connection</label>
-            <input
-              id="warehouse_connection"
-              name="warehouse_connection"
-              type="text"
-              value="{{ settings_values.warehouse_connection }}"
-              placeholder="Describe integration or endpoint"
-            >
-          </div>
-          <div class="field">
-            <label for="refresh_interval">Refresh Interval</label>
-            <input
-              id="refresh_interval"
-              name="refresh_interval"
-              type="text"
-              value="{{ settings_values.refresh_interval }}"
-              placeholder="Hourly, Daily, Weekly"
-            >
-          </div>
-          <div class="settings-card__actions">
-            <button type="submit" class="button button--sm">Update Data Settings</button>
-          </div>
-        </form>
-      </section>
+  <div class="settings-shell">
+    <div class="settings-tabs" role="tablist">
+      <button
+        type="button"
+        class="settings-tab is-active"
+        role="tab"
+        aria-selected="true"
+        data-tab-target="general"
+      >General</button>
+      <button
+        type="button"
+        class="settings-tab"
+        role="tab"
+        aria-selected="false"
+        data-tab-target="data"
+      >Data &amp; Insights</button>
+      <button
+        type="button"
+        class="settings-tab"
+        role="tab"
+        aria-selected="false"
+        data-tab-target="access"
+      >User Access</button>
     </div>
 
-    <div class="card-grid two-column">
-      <section class="card">
-        <h2>Analysis Mode</h2>
-        <p class="settings-card__meta">Insight defaults</p>
-        <form method="post" class="form-grid">
-          <input type="hidden" name="action" value="update_analysis">
-          <div class="field">
-            <label for="analysis_focus">Primary Focus Areas</label>
-            <input
-              id="analysis_focus"
-              name="analysis_focus"
-              type="text"
-              value="{{ settings_values.analysis_focus }}"
-              placeholder="Quality & Throughput"
-            >
-          </div>
-          <div class="settings-card__actions">
-            <button type="submit" class="button button--sm">Save Analysis Preferences</button>
-          </div>
-        </form>
-        <small>Admins and managers share access to the analysis workspace.</small>
+    <div class="settings-panels">
+      <section class="settings-panel is-active" data-tab-panel="general" role="tabpanel">
+        <div class="card-grid">
+          <section class="card card--highlight">
+            <h2>General Configuration</h2>
+            <p class="settings-card__meta">Branding &amp; presentation</p>
+            <form method="post" class="form-grid">
+              <input type="hidden" name="action" value="update_general">
+              <div class="field">
+                <label for="application_name">Application Name</label>
+                <input
+                  id="application_name"
+                  name="application_name"
+                  type="text"
+                  value="{{ settings_values.application_name }}"
+                  placeholder="Executive Reporting Suite"
+                >
+              </div>
+              <div class="field">
+                <label for="tagline">Tagline</label>
+                <input
+                  id="tagline"
+                  name="tagline"
+                  type="text"
+                  value="{{ settings_values.tagline }}"
+                  placeholder="High-trust insights for leadership"
+                >
+              </div>
+              <div class="settings-card__actions">
+                <button type="submit" class="button button--sm">Save General Settings</button>
+              </div>
+            </form>
+          </section>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Leadership Directory</h2>
-        <p class="settings-card__meta">Administrative coverage</p>
-        {% if admin_users %}
-          <p>The following leaders currently have system-wide administrative privileges:</p>
-          <div class="leadership-pills">
-            {% for admin in admin_users %}
-              <span class="pill">{{ admin.username }}</span>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p class="empty-state">No administrators have been assigned yet.</p>
-        {% endif %}
+      <section class="settings-panel" data-tab-panel="data" role="tabpanel" aria-hidden="true">
+        <div class="card-grid two-column">
+          <section class="card">
+            <h2>Data Connections</h2>
+            <p class="settings-card__meta">Source of truth</p>
+            <form method="post" class="form-grid">
+              <input type="hidden" name="action" value="update_database">
+              <div class="field">
+                <label for="data_source">Primary Data Source</label>
+                <input
+                  id="data_source"
+                  name="data_source"
+                  type="text"
+                  value="{{ settings_values.data_source }}"
+                  placeholder="Example: postgresql://user:password@host:5432/reporting"
+                >
+              </div>
+              <div class="field">
+                <label for="warehouse_connection">Data Warehouse Connection</label>
+                <input
+                  id="warehouse_connection"
+                  name="warehouse_connection"
+                  type="text"
+                  value="{{ settings_values.warehouse_connection }}"
+                  placeholder="Describe integration or endpoint"
+                >
+              </div>
+              <div class="field">
+                <label for="refresh_interval">Refresh Interval</label>
+                <input
+                  id="refresh_interval"
+                  name="refresh_interval"
+                  type="text"
+                  value="{{ settings_values.refresh_interval }}"
+                  placeholder="Hourly, Daily, Weekly"
+                >
+              </div>
+              <div class="settings-card__actions">
+                <button type="submit" class="button button--sm">Update Data Settings</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card">
+            <h2>Analysis Mode</h2>
+            <p class="settings-card__meta">Insight defaults</p>
+            <form method="post" class="form-grid">
+              <input type="hidden" name="action" value="update_analysis">
+              <div class="field">
+                <label for="analysis_focus">Primary Focus Areas</label>
+                <input
+                  id="analysis_focus"
+                  name="analysis_focus"
+                  type="text"
+                  value="{{ settings_values.analysis_focus }}"
+                  placeholder="Quality & Throughput"
+                >
+              </div>
+              <div class="settings-card__actions">
+                <button type="submit" class="button button--sm">Save Analysis Preferences</button>
+              </div>
+            </form>
+            <small>Admins and managers share access to the analysis workspace.</small>
+          </section>
+        </div>
       </section>
-    </div>
 
-    <section class="card">
-      <h2>User Administration</h2>
-      <p class="settings-card__meta">Access provisioning</p>
-      <p>
-        Create new users for managers or team members and adjust access levels as responsibilities
-        evolve. Passwords can be rotated by recreating a user profile.
-      </p>
-
-      <form method="post" class="form-grid two-column" style="margin-top: 1.25rem;">
-        <input type="hidden" name="action" value="add_user">
-        <div class="field">
-          <label for="new_username">Username</label>
-          <input id="new_username" name="new_username" type="text" placeholder="e.g. a.johnson">
-        </div>
-        <div class="field">
-          <label for="new_password">Temporary Password</label>
-          <input id="new_password" name="new_password" type="text" placeholder="Generate secure password">
-        </div>
-        <div class="field">
-          <label for="new_role">Role</label>
-          <select id="new_role" name="new_role">
-            {% for role in roles %}
-              <option value="{{ role.value }}">{{ role.label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="settings-card__actions" style="align-items: end;">
-          <button type="submit" class="button button--sm">Add User</button>
-        </div>
-      </form>
-
-      <div class="user-directory">
-        {% for directory_user in users %}
-          <form method="post" class="user-entry">
-            <input type="hidden" name="action" value="update_user_role">
-            <input type="hidden" name="user_id" value="{{ directory_user.id }}">
-            <div class="user-entry__identity">
-              <strong>{{ directory_user.username }}</strong>
-              <span class="user-entry__role-label">{{ role_labels[directory_user.role] }}</span>
-            </div>
-            <div>
-              <label for="role-{{ directory_user.id }}">Access Level</label>
-              <select id="role-{{ directory_user.id }}" name="role">
-                {% for role in roles %}
-                  <option value="{{ role.value }}" {% if directory_user.role == role.value %}selected{% endif %}>{{ role.label }}</option>
+      <section class="settings-panel" data-tab-panel="access" role="tabpanel" aria-hidden="true">
+        <div class="card-grid two-column">
+          <section class="card">
+            <h2>Leadership Directory</h2>
+            <p class="settings-card__meta">Administrative coverage</p>
+            {% if admin_users %}
+              <p>The following leaders currently have system-wide administrative privileges:</p>
+              <div class="leadership-pills">
+                {% for admin in admin_users %}
+                  <span class="pill">{{ admin.username }}</span>
                 {% endfor %}
-              </select>
-            </div>
-            <div class="settings-card__actions" style="align-items: center;">
-              <button type="submit" class="button button--sm">Apply</button>
-            </div>
-          </form>
-        {% endfor %}
-      </div>
-    </section>
+              </div>
+            {% else %}
+              <p class="empty-state">No administrators have been assigned yet.</p>
+            {% endif %}
+          </section>
+
+          <section class="card">
+            <h2>User Administration</h2>
+            <p class="settings-card__meta">Access provisioning</p>
+            <p>
+              Create new users for managers or team members and adjust access levels as responsibilities
+              evolve. Passwords can be rotated by recreating a user profile.
+            </p>
+
+            <form method="post" class="form-grid two-column" style="margin-top: 1.25rem;">
+              <input type="hidden" name="action" value="add_user">
+              <div class="field">
+                <label for="new_username">Username</label>
+                <input id="new_username" name="new_username" type="text" placeholder="e.g. a.johnson">
+              </div>
+              <div class="field">
+                <label for="new_password">Temporary Password</label>
+                <input id="new_password" name="new_password" type="text" placeholder="Generate secure password">
+              </div>
+              <div class="field">
+                <label for="new_role">Role</label>
+                <select id="new_role" name="new_role">
+                  {% for role in roles %}
+                    <option value="{{ role.value }}">{{ role.label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="settings-card__actions" style="align-items: end;">
+                <button type="submit" class="button button--sm">Add User</button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <section class="card">
+          <h2>Current Users</h2>
+          <p class="settings-card__meta">Manage existing access</p>
+          <div class="user-directory">
+            {% for directory_user in users %}
+              <form method="post" class="user-entry">
+                <input type="hidden" name="user_id" value="{{ directory_user.id }}">
+                <div class="user-entry__identity">
+                  <strong>{{ directory_user.username }}</strong>
+                  <span class="user-entry__role-label">{{ role_labels[directory_user.role] }}</span>
+                </div>
+                <div>
+                  <label for="role-{{ directory_user.id }}">Access Level</label>
+                  <select id="role-{{ directory_user.id }}" name="role">
+                    {% for role in roles %}
+                      <option value="{{ role.value }}" {% if directory_user.role == role.value %}selected{% endif %}>{{ role.label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="user-entry__actions">
+                  <button type="submit" class="button button--sm" name="action" value="update_user_role">Apply</button>
+                  <button
+                    type="submit"
+                    class="button button--sm button--ghost button--danger"
+                    name="action"
+                    value="delete_user"
+                    onclick="return confirm('Remove user {{ directory_user.username }}?');"
+                  >Remove</button>
+                </div>
+              </form>
+            {% endfor %}
+          </div>
+        </section>
+      </section>
+    </div>
   </div>
+  <script>
+    const tabs = document.querySelectorAll('.settings-tab');
+    const panels = document.querySelector('.settings-panels');
+    if (tabs.length && panels) {
+      panels.classList.add('has-tabs');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.tabTarget;
+          tabs.forEach((t) => {
+            t.classList.toggle('is-active', t === tab);
+            t.setAttribute('aria-selected', String(t === tab));
+          });
+          panels.querySelectorAll('.settings-panel').forEach((panel) => {
+            const isActive = panel.dataset.tabPanel === target;
+            panel.classList.toggle('is-active', isActive);
+            panel.setAttribute('aria-hidden', String(!isActive));
+          });
+        });
+      });
+    }
+  </script>
 {% endblock %}
