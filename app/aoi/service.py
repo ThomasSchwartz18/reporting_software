@@ -9,57 +9,72 @@ from flask import current_app
 
 from ..extensions import db
 from ..models import User
-from .models import AoiBoardData, AoiForm, AoiProblemCode, AoiRejection
-
-PROBLEM_CODES: tuple[tuple[int, str], ...] = (
-    (1, "Missing Component"),
-    (2, "Part In Wrong Location"),
-    (3, "Wrong Component"),
-    (4, "Damaged Component"),
-    (5, "Parts Not Seated"),
-    (6, "Insufficient Solder"),
-    (7, "Solder Bridge"),
-    (8, "No Solder"),
-    (9, "Damaged Pads Or Circuitry"),
-    (10, "Reversed Polarity"),
-    (11, "Excessive Solder"),
-    (12, "Solder Splash"),
-    (13, "Solder Voids, Holes, Etc."),
-    (14, "Solder Balls"),
-    (15, "Part Tombstoned"),
-    (16, "Part Skewed"),
-    (17, "Part Flipped"),
-    (18, "Part Billboard"),
-    (19, "Part Leaning"),
-    (20, "Solder In Solder Free Area"),
-    (21, "Missing RTV/EPOXY/CONF COAT/DYMAX"),
-    (22, "RTV/EPOXY/CONF COAT/DYMAX In Contact Area"),
-    (23, "Missing Revision/ Dye Mark"),
-    (24, "Blue Sheet Part"),
-    (25, "Defective Component"),
+from ..services.supabase import (
+    SupabaseConfigurationError,
+    SupabaseRequestError,
+    fetch_defect_definitions,
 )
+from .models import AoiBoardData, AoiForm, AoiProblemCode, AoiRejection
 
 
 def ensure_problem_codes() -> None:
-    """Ensure the lookup table is seeded with the authoritative codes."""
+    """Synchronise AOI problem codes with the Supabase ``defects`` table."""
 
-    existing = {code for code, _ in db.session.query(AoiProblemCode.code).all()}
-    missing = [code for code, _ in PROBLEM_CODES if code not in existing]
-
-    if not missing and len(existing) == len(PROBLEM_CODES):
+    try:
+        defects = fetch_defect_definitions()
+    except SupabaseConfigurationError as exc:
+        current_app.logger.warning("Skipping AOI problem code sync: %s", exc)
+        return
+    except SupabaseRequestError as exc:
+        current_app.logger.error("Failed to synchronise AOI problem codes: %s", exc)
         return
 
-    for code, name in PROBLEM_CODES:
-        problem = AoiProblemCode.query.get(code)
-        if problem is None:
-            db.session.add(AoiProblemCode(code=code, name=name))
-        elif problem.name != name:
-            current_app.logger.warning(
-                "AOI problem code name mismatch for %s: %s -> %s", code, problem.name, name
-            )
-            problem.name = name
+    existing = {problem.code: problem for problem in AoiProblemCode.query.all()}
+    incoming_ids: set[int] = set()
+    changed = False
 
-    db.session.commit()
+    for defect in defects:
+        code = defect["id"]
+        name = defect["name"]
+        part_type = defect.get("part_type")
+
+        incoming_ids.add(code)
+
+        problem = existing.get(code)
+        if problem is None:
+            db.session.add(
+                AoiProblemCode(code=code, name=name, part_type=part_type)
+            )
+            changed = True
+            continue
+
+        updated = False
+        if problem.name != name:
+            problem.name = name
+            updated = True
+        if problem.part_type != part_type:
+            problem.part_type = part_type
+            updated = True
+
+        if updated:
+            changed = True
+
+    stale_ids = set(existing.keys()) - incoming_ids
+    if stale_ids:
+        AoiProblemCode.query.filter(AoiProblemCode.code.in_(stale_ids)).delete(
+            synchronize_session=False
+        )
+        changed = True
+
+    if changed:
+        db.session.commit()
+        current_app.logger.info(
+            "AOI problem codes synchronised; %s active entries", len(incoming_ids)
+        )
+    else:
+        current_app.logger.debug(
+            "AOI problem codes already up to date (%s entries)", len(incoming_ids)
+        )
 
 
 def compute_qty_accepted(qty_inspected: int, qty_rejected: int) -> int:
@@ -72,11 +87,11 @@ def compute_qty_accepted(qty_inspected: int, qty_rejected: int) -> int:
 def find_problem_name(code: int) -> str | None:
     """Return the human-readable name for ``code`` or ``None``."""
 
-    mapping = dict(PROBLEM_CODES)
-    return mapping.get(code)
+    problem = AoiProblemCode.query.get(code)
+    return problem.name if problem else None
 
 
-def get_problem_codes() -> list[dict[str, int | str]]:
+def get_problem_codes() -> list[dict[str, int | str | None]]:
     """Return a serialisable list of problem codes for the UI."""
 
     codes = AoiProblemCode.query.order_by(AoiProblemCode.code.asc()).all()
