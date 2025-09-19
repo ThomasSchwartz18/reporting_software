@@ -7,7 +7,7 @@ from flask import Flask
 
 from .config import Config
 from .extensions import db
-from .models import ensure_default_user
+from .models import ensure_default_user, ensure_user_role_column
 from .routes.auth import auth_bp
 
 
@@ -50,4 +50,5 @@ def initialize_database(app: Flask) -> None:
     with app.app_context():
         Path(app.instance_path).mkdir(parents=True, exist_ok=True)
         db.create_all()
+        ensure_user_role_column()
         ensure_default_user()
