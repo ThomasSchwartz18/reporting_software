@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard - Reporting Software{% endblock %}
+{% block body_class %}layout-flow{% endblock %}
+{% block container_class %}container--medium{% endblock %}
 
 {% block styles %}
   <style>
+    .dashboard-description {
+      margin: 0 0 1.75rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
     .questionnaire {
       display: flex;
       flex-direction: column;
@@ -21,8 +29,9 @@
     }
 
     .question-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .option-grid button {
@@ -31,6 +40,7 @@
       color: var(--text-primary);
       border-color: var(--panel-border);
       position: relative;
+      transition: transform 0.2s ease;
     }
 
     .option-grid button::after {
@@ -47,6 +57,7 @@
       background: rgba(15, 76, 92, 0.08);
       border-color: var(--accent);
       color: var(--accent);
+      transform: translateY(-1px);
     }
 
     .option-grid button:hover::after,
@@ -81,50 +92,75 @@
       line-height: 1.6;
     }
 
-    .logout-link {
-      text-align: right;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
+    .questionnaire-meta {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
-    }
-
-    .logout-link a {
-      color: var(--accent);
-      font-weight: 600;
     }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="logout-link">
+  <div class="utility-bar">
+    <span>Signed in as {{ user.username }} · {{ user.role_enum.label }}</span>
     <a href="{{ url_for('auth.logout') }}">Log out</a>
   </div>
-  <div class="badge">Guided Report Selection</div>
-  <div class="questionnaire">
-    <div id="area-question" class="question-card active">
-      <h1 class="question-title">Select your area</h1>
-      <div class="option-grid two-column">
-        <button type="button" data-area="AOI">AOI</button>
-        <button type="button" data-area="Rework">Rework</button>
-        <button type="button" data-area="Hand Assembly">Hand Assembly</button>
-        <button type="button" data-area="Solder">Solder</button>
-        <button type="button" data-area="SMT">SMT</button>
-        <button type="button" data-area="RMA">RMA</button>
-      </div>
-    </div>
 
-    <div id="report-question" class="question-card" aria-live="polite">
-      <div class="toolbar">
-        <span>Selected Area</span>
-        <span id="selected-area-label">&mdash;</span>
+  <div class="page-header">
+    <div>
+      <div class="page-header__eyebrow">Operations Control Center</div>
+      <h1 class="page-header__title">Welcome back, {{ user.username }}</h1>
+      <p class="page-header__subtitle">
+        Select an operational area to access curated production reports, or switch into analysis
+        mode for executive-level insights.
+      </p>
+    </div>
+    <div class="page-header__actions">
+      {% if analysis_access %}
+        <a class="button button--outline" href="{{ url_for('auth.analysis') }}">Enter Analysis Mode</a>
+      {% endif %}
+      {% if is_admin %}
+        <a class="button" href="{{ url_for('auth.settings') }}">Configure Application</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card card--highlight">
+    <div class="card__section-title">Guided Reports</div>
+    <p class="dashboard-description">
+      Choose the production area you would like to review. We will present the most relevant report
+      set for your selection, ensuring teams and leadership stay aligned on critical metrics.
+    </p>
+
+    <div class="questionnaire">
+      <div id="area-question" class="question-card active">
+        <div class="questionnaire-meta">Step 1</div>
+        <h2 class="question-title">Select your area</h2>
+        <div class="option-grid two-column">
+          <button type="button" data-area="AOI">AOI</button>
+          <button type="button" data-area="Rework">Rework</button>
+          <button type="button" data-area="Hand Assembly">Hand Assembly</button>
+          <button type="button" data-area="Solder">Solder</button>
+          <button type="button" data-area="SMT">SMT</button>
+          <button type="button" data-area="RMA">RMA</button>
+        </div>
       </div>
-      <h1 class="question-title">Select report</h1>
-      <div class="option-grid two-column" id="report-options"></div>
-      <div class="prototype-message" id="prototype-message" hidden>
-        This application is currently a prototype. Reporting is only available for the AOI branch. Please return to the previous step to choose AOI for report access.
+
+      <div id="report-question" class="question-card" aria-live="polite">
+        <div class="questionnaire-meta">Step 2</div>
+        <div class="toolbar">
+          <span>Selected Area</span>
+          <span id="selected-area-label">&mdash;</span>
+        </div>
+        <h2 class="question-title">Select report</h2>
+        <div class="option-grid two-column" id="report-options"></div>
+        <div class="prototype-message" id="prototype-message" hidden>
+          This application is currently a prototype. Reporting is only available for the AOI branch.
+          Please return to the previous step to choose AOI for report access.
+        </div>
+        <button type="button" class="back-link" id="back-button">Go back</button>
       </div>
-      <button type="button" class="back-link" id="back-button">Go back</button>
     </div>
   </div>
 
