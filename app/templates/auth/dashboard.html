@@ -2,8 +2,186 @@
 
 {% block title %}Dashboard - Reporting Software{% endblock %}
 
+{% block styles %}
+  <style>
+    .questionnaire {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .question-card {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .question-card.active {
+      display: flex;
+    }
+
+    .question-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+    }
+
+    .option-grid button {
+      border-width: 2px;
+      background: transparent;
+      color: var(--text-primary);
+      border-color: var(--panel-border);
+      position: relative;
+    }
+
+    .option-grid button::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid transparent;
+      pointer-events: none;
+      transition: border 0.2s ease;
+    }
+
+    .option-grid button:hover,
+    .option-grid button:focus {
+      background: rgba(15, 76, 92, 0.08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .option-grid button:hover::after,
+    .option-grid button:focus::after {
+      border-color: rgba(15, 76, 92, 0.35);
+    }
+
+    .back-link {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--panel-border);
+      display: inline-flex;
+      width: auto;
+      padding-inline: 1.25rem;
+      letter-spacing: 0.08em;
+    }
+
+    .back-link:hover,
+    .back-link:focus {
+      background: rgba(15, 76, 92, 0.08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .prototype-message {
+      background: #f5f6f7;
+      border: 1px solid var(--panel-border);
+      padding: 1.2rem;
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .logout-link {
+      text-align: right;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .logout-link a {
+      color: var(--accent);
+      font-weight: 600;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
-  <h1>Welcome, {{ username }}!</h1>
-  <p>You have successfully logged into the reporting software.</p>
-  <p><a href="{{ url_for('auth.logout') }}">Log out</a></p>
+  <div class="logout-link">
+    <a href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
+  <div class="badge">Guided Report Selection</div>
+  <div class="questionnaire">
+    <div id="area-question" class="question-card active">
+      <h1 class="question-title">Select your area</h1>
+      <div class="option-grid two-column">
+        <button type="button" data-area="AOI">AOI</button>
+        <button type="button" data-area="Rework">Rework</button>
+        <button type="button" data-area="Hand Assembly">Hand Assembly</button>
+        <button type="button" data-area="Solder">Solder</button>
+        <button type="button" data-area="SMT">SMT</button>
+        <button type="button" data-area="RMA">RMA</button>
+      </div>
+    </div>
+
+    <div id="report-question" class="question-card" aria-live="polite">
+      <div class="toolbar">
+        <span>Selected Area</span>
+        <span id="selected-area-label">&mdash;</span>
+      </div>
+      <h1 class="question-title">Select report</h1>
+      <div class="option-grid two-column" id="report-options"></div>
+      <div class="prototype-message" id="prototype-message" hidden>
+        This application is currently a prototype. Reporting is only available for the AOI branch. Please return to the previous step to choose AOI for report access.
+      </div>
+      <button type="button" class="back-link" id="back-button">Go back</button>
+    </div>
+  </div>
+
+  <script>
+    const areaQuestion = document.getElementById('area-question');
+    const reportQuestion = document.getElementById('report-question');
+    const reportOptions = document.getElementById('report-options');
+    const prototypeMessage = document.getElementById('prototype-message');
+    const selectedAreaLabel = document.getElementById('selected-area-label');
+    const backButton = document.getElementById('back-button');
+
+    const reportRoutes = {
+      'SMT AOI': '{{ url_for('auth.report_aoi_smt') }}',
+      'TH AOI': '{{ url_for('auth.report_aoi_th') }}'
+    };
+
+    function showReportQuestion(area) {
+      selectedAreaLabel.textContent = area;
+      reportOptions.innerHTML = '';
+
+      if (area === 'AOI') {
+        prototypeMessage.hidden = true;
+        Object.entries(reportRoutes).forEach(([label, href]) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = label;
+          button.addEventListener('click', () => {
+            window.location.href = href;
+          });
+          reportOptions.appendChild(button);
+        });
+      } else {
+        prototypeMessage.hidden = false;
+      }
+
+      areaQuestion.classList.remove('active');
+      reportQuestion.classList.add('active');
+      backButton.focus();
+    }
+
+    function showAreaQuestion() {
+      areaQuestion.classList.add('active');
+      reportQuestion.classList.remove('active');
+      prototypeMessage.hidden = true;
+      reportOptions.innerHTML = '';
+      const firstAreaButton = areaQuestion.querySelector('button');
+      if (firstAreaButton) {
+        firstAreaButton.focus();
+      }
+    }
+
+    areaQuestion.querySelectorAll('button[data-area]').forEach((button) => {
+      button.addEventListener('click', () => {
+        showReportQuestion(button.getAttribute('data-area'));
+      });
+    });
+
+    backButton.addEventListener('click', showAreaQuestion);
+  </script>
 {% endblock %}

@@ -41,6 +41,26 @@ def dashboard():
     return render_template("auth/dashboard.html", username=session.get("username"))
 
 
+@auth_bp.route("/reports/aoi/smt")
+def report_aoi_smt():
+    """Render the SMT AOI report selection."""
+    if session.get("user_id") is None:
+        flash("Please log in to continue.", "error")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/report_aoi_smt.html")
+
+
+@auth_bp.route("/reports/aoi/th")
+def report_aoi_th():
+    """Render the TH AOI report selection."""
+    if session.get("user_id") is None:
+        flash("Please log in to continue.", "error")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/report_aoi_th.html")
+
+
 @auth_bp.route("/logout")
 def logout():
     """Log the user out and redirect to the login page."""

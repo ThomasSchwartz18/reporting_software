@@ -3,26 +3,34 @@
 {% block title %}Login - Reporting Software{% endblock %}
 
 {% block content %}
-  <h1>Reporting Software Login</h1>
-  <form method="post">
-    <label for="username">Username</label>
-    <input
-      id="username"
-      name="username"
-      type="text"
-      list="usernames"
-      placeholder="Select or type username"
-      autocomplete="off"
-      required
-    >
-    <datalist id="usernames">
-      {% for user in users %}
-        <option value="{{ user.username }}"></option>
-      {% endfor %}
-    </datalist>
+  <div class="toolbar">
+    <span>Reporting Access Portal</span>
+    <span>Secure Login</span>
+  </div>
+  <h1>Authenticate</h1>
+  <form method="post" class="stack">
+    <div>
+      <label for="username">Username</label>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        list="usernames"
+        placeholder="Select or type username"
+        autocomplete="off"
+        required
+      >
+      <datalist id="usernames">
+        {% for user in users %}
+          <option value="{{ user.username }}"></option>
+        {% endfor %}
+      </datalist>
+    </div>
 
-    <label for="password">Password</label>
-    <input id="password" name="password" type="password" placeholder="Enter password" required>
+    <div>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Enter password" required>
+    </div>
 
     <button type="submit">Log In</button>
   </form>
